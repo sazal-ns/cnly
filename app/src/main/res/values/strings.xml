@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Clyn</string>
+
+    <string name="loading">L o a d i n g . . .</string>
+    <string name="error"> Error!!!</string>
+    <string name="noNetMess">You don\'t have an active Internet Connection.</string>
+
+    <string name="sing_in">Sign in</string>
+    <string name="user_name">user name</string>
+    <string name="password">password</string>
+    <string name="login">LOGIN</string>
+    <string name="fb">Login with Facebook</string>
+    <string name="google">Login with Google</string>
+    <string name="phone">Login with Phone Number</string>
+    <string name="login_singup">Don\'t Have an Account? &#160;</string>
+    <string name="login_singup_buttor"> Sign-up</string>
+    <string name="agree">By signing up you agree with the </string>
+    <string name="tou">Terms of use</string>
+
+    <string name="title_activity_sing_up">singUpActivity</string>
+
+    <string name="sing_up">Sing Up</string>
+    <string name="email">Email Address</string>
+    <string name="repeat">Repeat password</string>
+    <string name="fb_sing_up">Sing up with Facebook</string>
+    <string name="google_sing_up">Sing up with Google</string>
+    <string name="phone_sing_up">Sing up with Phone Number</string>
+    <string name="title_activity_maps">Map</string>
+</resources>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2016. By Noor Nabiul Alam Siddiqui
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_sing_up"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.ns.siddiqui.sazal.clny_v20.singUpActivity"
+    android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar.Fullscreen"
+    android:background="@drawable/bg">
+
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="80dp"
+        app:srcCompat="@drawable/clyn"
+        android:id="@+id/imageView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/app_name" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/imageView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_height="wrap_content"
+        android:background="@drawable/singin_bg"
+        android:id="@+id/topPanel">
+
+        <TextView
+            android:text="@string/sing_up"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/singUpTextView"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:layout_marginTop="15dp"
+            android:textAllCaps="true"/>
+
+        <EditText
+            android:layout_width="@dimen/sing_in_layout_width"
+            android:layout_height="@dimen/sing_in_layout_height"
+            android:inputType="textPersonName"
+            android:hint="@string/user_name"
+            android:ems="10"
+            android:id="@+id/singUpUserNameEditText"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:background="#6dc393"
+            android:layout_marginTop="5dp"/>
+
+        <EditText
+            android:layout_width="@dimen/sing_in_layout_width"
+            android:layout_height="@dimen/sing_in_layout_height"
+            android:inputType="textEmailAddress"
+            android:hint="@string/email"
+            android:ems="10"
+            android:id="@+id/singUpEmailEditText"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:background="#6dc393"
+            android:layout_marginTop="5dp"/>
+
+        <EditText
+            android:layout_width="@dimen/sing_in_layout_width"
+            android:layout_height="@dimen/sing_in_layout_height"
+            android:layout_gravity="center"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/singUpPasswordEditText"
+            android:hint="@string/password"
+            android:textAlignment="center"
+            android:background="#6dc393"
+            android:layout_marginTop="3dp"/>
+
+        <EditText
+            android:layout_width="@dimen/sing_in_layout_width"
+            android:layout_height="@dimen/sing_in_layout_height"
+            android:layout_gravity="center"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/singUpRepeatPasswordEditText"
+            android:hint="@string/repeat"
+            android:textAlignment="center"
+            android:background="#6dc393"
+            android:layout_marginTop="3dp"/>
+
+        <Button
+            android:text="@string/sing_up"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/singUpButton"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:textColor="#ffffff"
+            android:background="@android:color/transparent"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/topPanel"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp"
+        android:id="@+id/loginPanel">
+
+        <Button
+            android:text="@string/fb_sing_up"
+            android:layout_width="@dimen/sing_in_layout_width"
+            android:layout_height="wrap_content"
+            android:id="@+id/fbLoginButton"
+            android:layout_gravity="center"
+            android:background="#3a5b99"
+            android:textColor="@android:color/white"/>
+
+        <Button
+            android:text="@string/google_sing_up"
+            android:layout_width="@dimen/sing_in_layout_width"
+            android:layout_height="wrap_content"
+            android:id="@+id/googleButton"
+            android:layout_gravity="center"
+            android:background="#cc3433"
+            android:layout_marginTop="5dp"
+            android:textColor="@android:color/white"/>
+
+        <Button
+            android:text="@string/phone_sing_up"
+            android:layout_width="@dimen/sing_in_layout_width"
+            android:layout_height="wrap_content"
+            android:id="@+id/phoneButton"
+            android:layout_gravity="center"
+            android:background="#454545"
+            android:layout_marginTop="5dp"
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
+
+</RelativeLayout>

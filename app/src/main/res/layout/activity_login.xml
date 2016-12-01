@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2016.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_login"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.ns.siddiqui.sazal.clny_v20.loginActivity"
+    android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar.Fullscreen"
+    android:background="@drawable/bg">
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="100dp"
+        app:srcCompat="@drawable/clyn"
+        android:id="@+id/imageView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/app_name" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/imageView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_height="200dp"
+        android:background="@drawable/singin_bg"
+        android:id="@+id/topPanel">
+
+        <TextView
+            android:text="@string/sing_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/singinTextView"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:layout_marginTop="15dp" />
+
+        <EditText
+            android:layout_width="@dimen/sing_in_layout_width"
+            android:layout_height="@dimen/sing_in_layout_height"
+            android:inputType="textPersonName"
+            android:hint="@string/user_name"
+            android:ems="10"
+            android:id="@+id/userNameEditText"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:background="#6dc393"
+            android:layout_marginTop="5dp"/>
+
+        <EditText
+            android:layout_width="@dimen/sing_in_layout_width"
+            android:layout_height="@dimen/sing_in_layout_height"
+            android:layout_gravity="center"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/passwordEditText"
+            android:hint="@string/password"
+            android:textAlignment="center"
+            android:background="#6dc393"
+            android:layout_marginTop="3dp"/>
+
+        <Button
+            android:text="@string/login"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/singInButton"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:textColor="#ffffff"
+            android:background="@android:color/transparent"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/topPanel"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp"
+        android:id="@+id/loginPanel">
+
+        <Button
+            android:text="@string/fb"
+            android:layout_width="@dimen/sing_in_layout_width"
+            android:layout_height="wrap_content"
+            android:id="@+id/fbLoginButton"
+            android:layout_gravity="center"
+            android:background="#3a5b99"
+            android:textColor="@android:color/white"/>
+
+        <Button
+            android:text="@string/google"
+            android:layout_width="@dimen/sing_in_layout_width"
+            android:layout_height="wrap_content"
+            android:id="@+id/googleButton"
+            android:layout_gravity="center"
+            android:background="#cc3433"
+            android:layout_marginTop="5dp"
+            android:textColor="@android:color/white"/>
+
+        <Button
+            android:text="@string/phone"
+            android:layout_width="@dimen/sing_in_layout_width"
+            android:layout_height="wrap_content"
+            android:id="@+id/phoneButton"
+            android:layout_gravity="center"
+            android:background="#454545"
+            android:layout_marginTop="5dp"
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/loginPanel"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="25dp">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="@dimen/sing_in_layout_width"
+            android:layout_height="match_parent"
+            android:layout_gravity="center">
+
+            <TextView
+                android:text="@string/login_singup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/login_singup_textView"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                android:textAlignment="textEnd"
+                android:layout_weight="0.4"
+                tools:ignore="RtlCompat" />
+
+            <Button
+                android:text="@string/login_singup_buttor"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:id="@+id/SingUpButton"
+                android:layout_weight="1"
+                android:textSize="15sp"
+                android:background="@android:color/transparent"
+                android:textColor="#41b86c"
+                android:textAlignment="textStart"
+                tools:ignore="RtlCompat" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="@dimen/sing_in_layout_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+            <TextView
+                android:text="@string/agree"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/aggreeTextView"
+                android:layout_weight="1"
+                android:textColor="@android:color/white"/>
+
+            <Button
+                android:text="@string/tou"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/ToUButton"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
