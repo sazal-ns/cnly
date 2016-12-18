@@ -10,4 +10,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.ns.siddiqui.sazal.clny_v20.MapsActivity"
-    map:cameraZoom="6.5"/>
+    map:cameraZoom="16.5"/>
