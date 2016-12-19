@@ -64,7 +64,6 @@ public class loginActivity extends AppCompatActivity {
     }
 
     private void init() {
-
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -75,7 +74,7 @@ public class loginActivity extends AppCompatActivity {
                     startActivity(new Intent(loginActivity.this, singUpActivity.class));
                     break;
                 case R.id.singInButton:
-                    startActivity(new Intent(loginActivity.this, MapsActivity.class));
+                    startActivity(new Intent(loginActivity.this, MainActivity.class));
                     finish();
                     break;
             }
