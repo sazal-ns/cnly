@@ -6,6 +6,8 @@ package com.ns.siddiqui.sazal.clny_v20;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -21,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,7 +35,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.GPSTracker;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback{
 
     private GoogleMap mMap;
     private GPSTracker gpsTracker;
@@ -139,7 +142,8 @@ public class MainActivity extends AppCompatActivity
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            return;
+            //return;
+
         }
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setMyLocationEnabled(true);
@@ -203,8 +207,9 @@ public class MainActivity extends AppCompatActivity
             // Move the camera to last position with a zoom level
             if (i == 9) {
                 CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(randomLocation[0],
-                                randomLocation[1])).zoom(17).build();
+                        .target(new LatLng(gpsTracker.getLat(),
+                                gpsTracker.getLon())).zoom(17).build();
+
 
                 mMap.animateCamera(CameraUpdateFactory
                         .newCameraPosition(cameraPosition));
@@ -217,6 +222,6 @@ public class MainActivity extends AppCompatActivity
 
         return new double[] { latitude + ((Math.random() - 0.5) / 500),
                 longitude + ((Math.random() - 0.5) / 500),
-                150 + ((Math.random() - 0.5) * 10) };
+                150 + ((Math.random() - 0.5) * 50) };
     }
 }
