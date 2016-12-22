@@ -26,11 +26,14 @@ import com.android.volley.toolbox.Volley;
 import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppConfig;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.SQLiteHandler;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.SessionManager;
+import com.ns.siddiqui.sazal.clny_v20.model.User;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+
 
 public class loginActivity extends AppCompatActivity {
 
@@ -51,8 +54,6 @@ public class loginActivity extends AppCompatActivity {
 
         preInit();
 
-        init();
-
         // Progress dialog
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
@@ -63,7 +64,7 @@ public class loginActivity extends AppCompatActivity {
         // Session manager
         session = new SessionManager(getApplicationContext());
 
-        // Check if user is already logged in or not
+        // Check if User is already logged in or not
         if (session.isLoggedIn()) {
             // User is already logged in. Take him to main activity
             Intent intent = new Intent(loginActivity.this, MainActivity.class);
@@ -104,9 +105,6 @@ public class loginActivity extends AppCompatActivity {
         ToUButton.setTypeface(roboto);
     }
 
-    private void init() {
-    }
-
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -122,8 +120,6 @@ public class loginActivity extends AppCompatActivity {
     };
 
     private void doLogin(final String email, final String password) {
-        // Tag used to cancel the request
-        String tag_string_req = "req_login";
 
         pDialog.setMessage("Logging in ...");
         showDialog();
@@ -132,55 +128,49 @@ public class loginActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(String response) {
-                Log.d("check login", "Login Response: " + response.toString());
+                Log.d("check login", "Login Response: " + response);
                 hideDialog();
+                JSONObject object1 = null;
+                try {
+                    object1 = new JSONObject(response);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 if (response.contains("false")){
-                    Intent intent = new Intent(loginActivity.this, MainActivity.class);
-                    finish();
-                    startActivity(intent);
+                    try {
+
+                        JSONObject object = new JSONObject(object1.getString("user"));
+
+                            User.setUserName(object.getString("user"));
+                            User.setEmailAddress(object.getString("email"));
+                            User.setId(object.getString("id"));
+                            User.setCreatedOn(object.getString("createdOn"));
+                            User.setBio(object.getString("bio"));
+                            User.setFavMusic(object.getString("favMusic"));
+                            User.setFavPet(object.getString("favPet"));
+                            User.setFirstName(object.getString("firstName"));
+                            User.setFullAddress(object.getString("fullAddress"));
+                            User.setImageLink(object.getString("imageLink"));
+                            User.setLastName(object.getString("lastName"));
+                            User.setUnique_id(object.getString("u_id"));
+                            User.setUpdatedOn(object.getString("updatedOn"));
+
+                            Intent intent = new Intent(loginActivity.this, MainActivity.class);
+                            finish();
+                            startActivity(intent);
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
                 else{
-                    dialogShow(response);
-                }
-                /*try {
-                    JSONObject jObj = new JSONObject(response);
-                    boolean error = jObj.getBoolean("error");
-
-                    // Check for error node in json
-                    if (!error) {
-                        // user successfully logged in
-                        // Create login session
-                        session.setLogin(true);
-
-                        // Now store the user in SQLite
-                        String uid = jObj.getString("uid");
-
-                        JSONObject user = jObj.getJSONObject("user");
-                        String name = user.getString("name");
-                        String email = user.getString("email");
-                        String created_at = user
-                                .getString("created_at");
-
-                        // Inserting row in users table
-                        db.addUser(name, email, uid, created_at);
-
-                        // Launch main activity
-                        Intent intent = new Intent(LoginActivity.this,
-                                MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        // Error in login. Get the error message
-                        String errorMsg = jObj.getString("error_msg");
-                        Toast.makeText(getApplicationContext(),
-                                errorMsg, Toast.LENGTH_LONG).show();
+                    try {
+                        dialogShow(object1.getString("error_msg"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    // JSON error
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
-*/
             }
         }, new Response.ErrorListener() {
 
@@ -202,7 +192,6 @@ public class loginActivity extends AppCompatActivity {
 
                 return params;
             }
-
         };
 
         // Adding request to request queue

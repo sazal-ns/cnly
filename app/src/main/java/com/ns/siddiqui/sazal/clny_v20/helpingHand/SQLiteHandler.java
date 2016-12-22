@@ -29,7 +29,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "android_api";
 
     // Login table name
-    private static final String TABLE_USER = "user";
+    private static final String TABLE_USER = "User";
 
     // Login Table Columns names
     private static final String KEY_ID = "id";
@@ -65,7 +65,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     }
 
     /**
-     * Storing user details in database
+     * Storing User details in database
      * */
     public void addUser(String name, String email, String uid, String created_at) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -80,11 +80,11 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         long id = db.insert(TABLE_USER, null, values);
         db.close(); // Closing database connection
 
-        Log.d(TAG, "New user inserted into sqlite: " + id);
+        Log.d(TAG, "New User inserted into sqlite: " + id);
     }
 
     /**
-     * Getting user data from database
+     * Getting User data from database
      * */
     public HashMap<String, String> getUserDetails() {
         HashMap<String, String> user = new HashMap<String, String>();
@@ -102,8 +102,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         }
         cursor.close();
         db.close();
-        // return user
-        Log.d(TAG, "Fetching user from Sqlite: " + user.toString());
+        // return User
+        Log.d(TAG, "Fetching User from Sqlite: " + user.toString());
 
         return user;
     }
@@ -117,7 +117,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.delete(TABLE_USER, null, null);
         db.close();
 
-        Log.d(TAG, "Deleted all user info from sqlite");
+        Log.d(TAG, "Deleted all User info from sqlite");
     }
 
 }

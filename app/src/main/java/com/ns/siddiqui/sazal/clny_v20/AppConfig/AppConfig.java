@@ -9,9 +9,9 @@ package com.ns.siddiqui.sazal.clny_v20.AppConfig;
  */
 
 public final class AppConfig {
-    // Server user login url
+    // Server User login url
     public static String URL_LOGIN = "http://app.clynpro.com/login.php";
 
-    // Server user register url
+    // Server User register url
     public static String URL_REGISTER = "http://app.clynpro.com/register.php";
 }

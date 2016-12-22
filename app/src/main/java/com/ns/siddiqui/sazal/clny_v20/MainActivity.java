@@ -6,8 +6,9 @@ package com.ns.siddiqui.sazal.clny_v20;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -22,8 +23,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -33,12 +35,24 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.GPSTracker;
+import com.ns.siddiqui.sazal.clny_v20.model.User;
+
+import java.io.InputStream;
+import java.net.URL;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback{
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, View.OnClickListener{
+
+    private TextView nameTextView;
+    private View header;
+    private CircleImageView pic;
 
     private GoogleMap mMap;
     private GPSTracker gpsTracker;
+
+    private  String picUrl= "http://app.clynpro.com/image/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +78,31 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        header= navigationView.getHeaderView(0);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         gpsTracker = new GPSTracker(this);
+
+        preInti();
+    }
+
+    private void preInti() {
+        pic = (CircleImageView)  header.findViewById(R.id.pic);
+        nameTextView = (TextView) header.findViewById(R.id.nameTextView);
+        //picUrl = picUrl.concat(User.getImageLink());
+        init();
+    }
+
+    private void init() {
+
+        nameTextView.setText(User.getUserName());
+        if (User.getImageLink()!=null){
+          // pic.setImageURI(Uri.parse(picUrl+ User.getImageLink()));
+            new DownLoadImageTask(pic).execute(picUrl+User.getImageLink());
+        }
+
     }
 
     @Override
@@ -140,7 +174,7 @@ public class MainActivity extends AppCompatActivity
             // here to request the missing permissions, and then overriding
             //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
             //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
+            // to handle the case where the User grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             //return;
 
@@ -223,5 +257,49 @@ public class MainActivity extends AppCompatActivity
         return new double[] { latitude + ((Math.random() - 0.5) / 500),
                 longitude + ((Math.random() - 0.5) / 500),
                 150 + ((Math.random() - 0.5) * 50) };
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+
+        }
+
+    }
+
+    private class DownLoadImageTask extends AsyncTask<String,Void,Bitmap>{
+        ImageView imageView;
+
+        public DownLoadImageTask(ImageView imageView){
+            this.imageView = imageView;
+        }
+
+        /*
+            doInBackground(Params... params)
+                Override this method to perform a computation on a background thread.
+         */
+        protected Bitmap doInBackground(String...urls){
+            String urlOfImage = urls[0];
+            Bitmap logo = null;
+            try{
+                InputStream is = new URL(urlOfImage).openStream();
+                /*
+                    decodeStream(InputStream is)
+                        Decode an input stream into a bitmap.
+                 */
+                logo = BitmapFactory.decodeStream(is);
+            }catch(Exception e){ // Catch the download exception
+                e.printStackTrace();
+            }
+            return logo;
+        }
+
+        /*
+            onPostExecute(Result result)
+                Runs on the UI thread after doInBackground(Params...).
+         */
+        protected void onPostExecute(Bitmap result){
+            imageView.setImageBitmap(result);
+        }
     }
 }

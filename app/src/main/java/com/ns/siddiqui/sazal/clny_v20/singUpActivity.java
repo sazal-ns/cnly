@@ -68,7 +68,7 @@ public class singUpActivity extends AppCompatActivity {
         // SQLite database handler
         db = new SQLiteHandler(getApplicationContext());
 
-        // Check if user is already logged in or not
+        // Check if User is already logged in or not
         if (session.isLoggedIn()) {
             // User is already logged in. Take him to main activity
             Intent intent = new Intent(singUpActivity.this,
@@ -142,9 +142,6 @@ public class singUpActivity extends AppCompatActivity {
                 return params;
             }
         };
-
-        // Adding request to request queue
-        /*AppController.getInstance().addToRequestQueue(request, tag_string_req);*/
         Volley.newRequestQueue(this).add(request);
     }
 
