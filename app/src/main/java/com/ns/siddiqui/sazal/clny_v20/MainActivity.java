@@ -5,6 +5,7 @@
 package com.ns.siddiqui.sazal.clny_v20;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,6 +26,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -79,6 +81,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         header= navigationView.getHeaderView(0);
+        NavigationView footerView = (NavigationView) findViewById(R.id.navigation_drawer_bottom);
+        footerView.setNavigationItemSelectedListener(this);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -152,7 +156,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_payments) {
 
         } else if (id == R.id.nav_support) {
-
+            Intent intent = new Intent(this, SupporMainActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_clean) {
 
         }

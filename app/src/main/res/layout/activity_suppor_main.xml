@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_suppor_main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="com.ns.siddiqui.sazal.clny_v20.SupporMainActivity">
+
+    <include layout="@layout/app_bar"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:text=" FAQ'S "
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:layout_margin="18dp"
+                android:id="@+id/faqButton"
+                android:background="@color/background"/>
+
+            <Button
+                android:text=" About Clyn "
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:layout_margin="18dp"
+                android:id="@+id/aboutButton"
+                android:background="@color/background"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    ></View>
+
+                <com.github.aakira.expandablelayout.ExpandableWeightLayout
+                    android:id="@+id/expandableLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"
+                    app:ael_expanded="false"
+                    app:ael_interpolator="anticipateOvershoot">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="18dp"
+                        android:text="
+        sample.sample.sample.sample.sample.sample.sample.sample.sample.sample.\n
+        sample.sample.sample.sample.sample.sample.sample.sample.sample.sample.\n
+        sample.sample.sample.sample.sample.sample.sample.sample.sample.sample.\n
+        sample.sample.sample.sample.sample.sample.sample.sample.sample.sample.\n
+        sample.sample.sample.sample.sample.sample.sample.sample.sample.sample.\n
+        " />
+                </com.github.aakira.expandablelayout.ExpandableWeightLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"></View>
+            </LinearLayout>
+
+            <Button
+                android:text=" Support Center "
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:layout_margin="18dp"
+                android:id="@+id/supportCenterButton"
+                android:background="@color/background"/>
+            <Button
+                android:text=" Intern Opportunities "
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:layout_margin="18dp"
+                android:id="@+id/internButton"
+                android:background="@color/background"/>
+            <Button
+                android:text=" Legal "
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:layout_margin="18dp"
+                android:id="@+id/LegalButton"
+                android:background="@color/background"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    ></View>
+
+                <com.github.aakira.expandablelayout.ExpandableWeightLayout
+                    android:id="@+id/expandableLayoutLegal"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"
+                    app:ael_expanded="false"
+                    app:ael_interpolator="anticipateOvershoot">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="18dp"
+                        android:text="
+        sample.sample.sample.sample.sample.sample.sample.sample.sample.sample.\n
+        sample.sample.sample.sample.sample.sample.sample.sample.sample.sample.\n
+        sample.sample.sample.sample.sample.sample.sample.sample.sample.sample.\n
+        sample.sample.sample.sample.sample.sample.sample.sample.sample.sample.\n
+        sample.sample.sample.sample.sample.sample.sample.sample.sample.sample.\n
+        " />
+                </com.github.aakira.expandablelayout.ExpandableWeightLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"></View>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>
