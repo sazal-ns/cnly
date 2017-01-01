@@ -6,10 +6,7 @@ package com.ns.siddiqui.sazal.clny_v20;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +15,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -26,17 +22,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppConfig;
-import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppController;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.SQLiteHandler;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.SessionManager;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class singUpActivity extends AppCompatActivity {
+public class SingUpActivity extends AppCompatActivity {
 
     private EditText singUpUserNameEditText,singUpEmailEditText,singUpPasswordEditText,singUpRepeatPasswordEditText;
     private Button singUpButton;
@@ -71,7 +63,7 @@ public class singUpActivity extends AppCompatActivity {
         // Check if User is already logged in or not
         if (session.isLoggedIn()) {
             // User is already logged in. Take him to main activity
-            Intent intent = new Intent(singUpActivity.this,
+            Intent intent = new Intent(SingUpActivity.this,
                     MainActivity.class);
             startActivity(intent);
             finish();
@@ -114,7 +106,7 @@ public class singUpActivity extends AppCompatActivity {
                 Log.d("OnResponse", "Register Response: " + response);
                 hideDialog();
                 if (response.contains("false")){
-                    Intent intent = new Intent(singUpActivity.this, loginActivity.class);
+                    Intent intent = new Intent(SingUpActivity.this, LoginActivity.class);
                     finish();
                     startActivity(intent);
                 }
@@ -158,7 +150,7 @@ public class singUpActivity extends AppCompatActivity {
     private void dialogShow(String s){
         Drawable error_icon = getResources().getDrawable(R.mipmap.ic_alert);
 
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(singUpActivity.this)
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(SingUpActivity.this)
                 .title(R.string.error)
                 .content(s)
                 .icon(error_icon);

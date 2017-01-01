@@ -59,7 +59,7 @@ public class Loading extends AppCompatActivity {
                         }
                     }
                     if (progress>=100) {
-                        Intent intent = new Intent(Loading.this, loginActivity.class);
+                        Intent intent = new Intent(Loading.this, LoginActivity.class);
                         startActivity(intent);
                         finish();
                     }

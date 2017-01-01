@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
     }
     buildTypes {
         release {
@@ -28,7 +29,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.afollestad.material-dialogs:core:0.9.1.0'
-    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.0.1'
     compile 'com.android.support:design:25.0.1'
     compile 'com.google.android.gms:play-services-maps:10.0.1'
@@ -37,4 +37,6 @@ dependencies {
     compile 'com.mcxiaoke.volley:library-aar:1.0.0'
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.github.aakira:expandable-layout:1.6.0@aar'
+    compile 'com.android.support:support-v4:23.4.0'
+    testCompile 'junit:junit:4.12'
 }

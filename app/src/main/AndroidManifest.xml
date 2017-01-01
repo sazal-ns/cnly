@@ -35,8 +35,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".loginActivity" />
-        <activity android:name=".singUpActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".SingUpActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -56,7 +56,8 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".SupporMainActivity"></activity>
+        <activity android:name=".SupporMainActivity" />
+        <activity android:name=".ProfileActivity"></activity>
     </application>
 
 </manifest>

@@ -7,23 +7,21 @@ package com.ns.siddiqui.sazal.clny_v20;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppConfig;
+import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.SQLiteHandler;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.SessionManager;
 import com.ns.siddiqui.sazal.clny_v20.model.User;
@@ -35,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class loginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
    private TextView singinTextView,login_singup_textView,aggreeTextView;
    private EditText userNameEditText,passwordEditText;
@@ -67,7 +65,7 @@ public class loginActivity extends AppCompatActivity {
         // Check if User is already logged in or not
         if (session.isLoggedIn()) {
             // User is already logged in. Take him to main activity
-            Intent intent = new Intent(loginActivity.this, MainActivity.class);
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
         }
@@ -110,7 +108,7 @@ public class loginActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.SingUpButton:
-                    startActivity(new Intent(loginActivity.this, singUpActivity.class));
+                    startActivity(new Intent(LoginActivity.this, SingUpActivity.class));
                     finish();
                     break;
                 case R.id.singInButton:
@@ -155,7 +153,7 @@ public class loginActivity extends AppCompatActivity {
                             User.setUnique_id(object.getString("u_id"));
                             User.setUpdatedOn(object.getString("updatedOn"));
 
-                            Intent intent = new Intent(loginActivity.this, MainActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             finish();
                             startActivity(intent);
 
@@ -166,7 +164,9 @@ public class loginActivity extends AppCompatActivity {
                 }
                 else{
                     try {
-                        dialogShow(object1.getString("error_msg"));
+                        /*dialogShow(object1.getString("error_msg"));*/
+                        assert object1 != null;
+                        new DialogShow(LoginActivity.this,"Login Failed !!!",object1.getString("error_msg"),getResources().getDrawable(R.mipmap.ic_alert));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -177,8 +177,8 @@ public class loginActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("chekc login", "Login Error: " + error.getMessage());
-                Toast.makeText(getApplicationContext(),
-                        error.getMessage(), Toast.LENGTH_LONG).show();
+                /*dialogShow(error.getMessage()+"\n Please Try Again");*/
+                new DialogShow( LoginActivity.this,"Server Error","Please Try Again",getResources().getDrawable(R.mipmap.ic_alert));
                 hideDialog();
             }
         }) {
@@ -197,17 +197,6 @@ public class loginActivity extends AppCompatActivity {
         // Adding request to request queue
        /* AppController.getInstance().addToRequestQueue(strReq, tag_string_req);*/
         Volley.newRequestQueue(this).add(request);
-    }
-
-    private void dialogShow(String s) {
-        Drawable error_icon = getResources().getDrawable(R.mipmap.ic_alert);
-
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(loginActivity.this)
-                .title(R.string.error)
-                .content(s)
-                .icon(error_icon);
-        MaterialDialog dialog = builder.build();
-        dialog.show();
     }
 
     private void showDialog() {

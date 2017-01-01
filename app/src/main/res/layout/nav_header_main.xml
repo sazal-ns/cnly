@@ -34,11 +34,11 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:id="@+id/nameTextView"/>
 
-    <TextView
-        android:id="@+id/textView"
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="View Profile"
-        />
+        android:background="@drawable/md_transparent"
+        android:id="@+id/viewProfileButton" />
 
 </LinearLayout>

@@ -36,6 +36,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
+import com.ns.siddiqui.sazal.clny_v20.helpingHand.DownLoadImageTask;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.GPSTracker;
 import com.ns.siddiqui.sazal.clny_v20.model.User;
 
@@ -47,21 +49,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, View.OnClickListener{
 
-    private TextView nameTextView;
-    private View header;
-    private CircleImageView pic;
-
     private GoogleMap mMap;
     private GPSTracker gpsTracker;
-
-    private  String picUrl= "http://app.clynpro.com/image/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        navLoad();
 
         Button fab = (Button) findViewById(R.id.fabButton);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -72,17 +68,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        header= navigationView.getHeaderView(0);
-        NavigationView footerView = (NavigationView) findViewById(R.id.navigation_drawer_bottom);
-        footerView.setNavigationItemSelectedListener(this);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -91,21 +76,41 @@ public class MainActivity extends AppCompatActivity
 
         preInti();
     }
+    private void navLoad(){
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View header= navigationView.getHeaderView(0);
+        NavigationView footerView = (NavigationView) findViewById(R.id.navigation_drawer_bottom);
+        footerView.setNavigationItemSelectedListener(this);
+
+        Button viewProfile = (Button) header.findViewById(R.id.viewProfileButton);
+        viewProfile.setOnClickListener(this);
+        CircleImageView pic = (CircleImageView) header.findViewById(R.id.pic);
+        TextView nameTextView = (TextView) header.findViewById(R.id.nameTextView);
+
+        nameTextView.setText(User.getUserName());
+        if (User.getImageLink()!=null){
+            // pic.setImageURI(Uri.parse(picUrl+ User.getImageLink()));
+            String picUrl = "http://app.clynpro.com/image/";
+            new DownLoadImageTask(pic).execute(picUrl +User.getImageLink());
+        }
+
+    }
 
     private void preInti() {
-        pic = (CircleImageView)  header.findViewById(R.id.pic);
-        nameTextView = (TextView) header.findViewById(R.id.nameTextView);
-        //picUrl = picUrl.concat(User.getImageLink());
         init();
     }
 
     private void init() {
-
-        nameTextView.setText(User.getUserName());
-        if (User.getImageLink()!=null){
-          // pic.setImageURI(Uri.parse(picUrl+ User.getImageLink()));
-            new DownLoadImageTask(pic).execute(picUrl+User.getImageLink());
-        }
 
     }
 
@@ -148,7 +153,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            // Handle the camera action
+            new DialogShow(MainActivity.this,"Where am I?","You are at Home",getResources().getDrawable(R.drawable.ic_home_black_24dp));
         } else if (id == R.id.nav_calender) {
 
         } else if (id == R.id.nav_gift) {
@@ -157,6 +162,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_support) {
             Intent intent = new Intent(this, SupporMainActivity.class);
+            //drawer.closeDrawers();
             startActivity(intent);
         } else if (id == R.id.nav_clean) {
 
@@ -267,44 +273,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            case R.id.viewProfileButton:
+                Intent intent = new Intent(this, ProfileActivity.class);
+               // drawer.closeDrawers();
+                startActivity(intent);
+                break;
 
         }
 
-    }
-
-    private class DownLoadImageTask extends AsyncTask<String,Void,Bitmap>{
-        ImageView imageView;
-
-        public DownLoadImageTask(ImageView imageView){
-            this.imageView = imageView;
-        }
-
-        /*
-            doInBackground(Params... params)
-                Override this method to perform a computation on a background thread.
-         */
-        protected Bitmap doInBackground(String...urls){
-            String urlOfImage = urls[0];
-            Bitmap logo = null;
-            try{
-                InputStream is = new URL(urlOfImage).openStream();
-                /*
-                    decodeStream(InputStream is)
-                        Decode an input stream into a bitmap.
-                 */
-                logo = BitmapFactory.decodeStream(is);
-            }catch(Exception e){ // Catch the download exception
-                e.printStackTrace();
-            }
-            return logo;
-        }
-
-        /*
-            onPostExecute(Result result)
-                Runs on the UI thread after doInBackground(Params...).
-         */
-        protected void onPostExecute(Bitmap result){
-            imageView.setImageBitmap(result);
-        }
     }
 }
