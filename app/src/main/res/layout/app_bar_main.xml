@@ -39,16 +39,13 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+   <!-- <include layout="@layout/content_main" />-->
 
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-    <Button
-        android:text=" REQUEST TO CLYN "
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_margin="18dp"
-        android:id="@+id/fabButton"
-        android:background="@color/background"/>
 
 </android.support.design.widget.CoordinatorLayout>

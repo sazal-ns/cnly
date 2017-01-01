@@ -4,16 +4,13 @@
 
 package com.ns.siddiqui.sazal.clny_v20;
 
-import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.util.Log;
+import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,73 +21,197 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DownLoadImageTask;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.GPSTracker;
 import com.ns.siddiqui.sazal.clny_v20.model.User;
 
-import java.io.InputStream;
-import java.net.URL;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, View.OnClickListener{
+        implements  View.OnClickListener{
 
     private GoogleMap mMap;
     private GPSTracker gpsTracker;
+
+    public static int navItemIndex = 0;
+
+    private static final String TAG_HOME = "Home";
+    private static final String TAG_FREE = "Free Clyns";
+    private static final String TAG_CALENDER = "Clyns Calender";
+    private static final String TAG_PAYMENT = "Payment";
+    private static final String TAG_SETTINGS = "Settings";
+    private static final String TAG_CLEAN = "Clean";
+    private static final String TAG_SUPPORT = "Support";
+    public static String CURRENT_TAG = TAG_HOME;
+
+    private boolean shouldLoadHomeFragOnBackPress = true;
+    private Handler mHandler;
+
+    private  NavigationView navigationView,footerView;
+    private DrawerLayout drawer;
+    private  Toolbar toolbar;
+
+    public Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mHandler = new Handler();
 
-        navLoad();
-
-        Button fab = (Button) findViewById(R.id.fabButton);
+       /* Button fab = (Button) findViewById(R.id.fabButton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
-
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        gpsTracker = new GPSTracker(this);
+        });*/
 
         preInti();
+
+        navLoad();
+
+        setUpNavigationView();
+
+        if (savedInstanceState == null) {
+            navItemIndex = 0;
+            CURRENT_TAG = TAG_HOME;
+            loadHomeFragment();
+        }
     }
+
+    private void setUpNavigationView() {
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.nav_home:
+                        if (CURRENT_TAG.equals(TAG_HOME))
+                            new DialogShow(MainActivity.this,"Where am I?","You are at Home",getResources().getDrawable(R.drawable.ic_home_black_24dp));
+                        navItemIndex = 0;
+                        CURRENT_TAG = TAG_HOME;
+                        break;
+                    case R.id.nav_gift:
+                        if (CURRENT_TAG.equals(TAG_FREE))
+                            new DialogShow(MainActivity.this,"Where am I?","You are at Free Clyn",getResources().getDrawable(R.drawable.ic_card_giftcard_black_24dp));
+                        navItemIndex = 1;
+                        CURRENT_TAG = TAG_FREE;
+                        break;
+                    case R.id.nav_calender:
+                        navItemIndex = 2;
+                        CURRENT_TAG = TAG_CALENDER;
+                        break;
+                    case R.id.nav_payments:
+                        navItemIndex = 3;
+                        CURRENT_TAG = TAG_PAYMENT;
+                        break;
+                    case R.id.nav_clean:
+                        navItemIndex = 4;
+                        CURRENT_TAG = TAG_CLEAN;
+                        break;
+                    default:
+                        navItemIndex =0;
+                }
+                loadHomeFragment();
+                return true;
+            }
+        });
+
+        footerView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.nav_settings:
+                        navItemIndex = 5;
+                        CURRENT_TAG = TAG_SETTINGS;
+                        break;
+                    case R.id.nav_support:
+                        startActivity(new Intent(MainActivity.this, SupporMainActivity.class));
+                        drawer.closeDrawers();
+                        return true;
+                    default:
+                        navItemIndex = 0;
+                }
+
+                loadHomeFragment();
+                return false;
+            }
+        });
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
+                super.onDrawerClosed(drawerView);
+            }
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
+                super.onDrawerOpened(drawerView);
+            }
+        };
+
+        //Setting the actionbarToggle to drawer layout
+        drawer.setDrawerListener(actionBarDrawerToggle);
+
+        //calling sync state is necessary or else your hamburger icon wont show up
+        actionBarDrawerToggle.syncState();
+    }
+
+    private void loadHomeFragment() {
+
+        if (getSupportFragmentManager().findFragmentByTag(CURRENT_TAG) != null) {
+            drawer.closeDrawers();
+            return;
+        }
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                Fragment fragment = getHomeFragment();
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
+                        android.R.anim.fade_out);
+                fragmentTransaction.replace(R.id.frame, fragment, CURRENT_TAG);
+                fragmentTransaction.commitAllowingStateLoss();
+            }
+        };
+
+        if (runnable != null) {
+            mHandler.post(runnable);
+        }
+
+        drawer.closeDrawers();
+
+        invalidateOptionsMenu();
+
+    }
+
+    private Fragment getHomeFragment() {
+        switch (navItemIndex) {
+            case 1:
+                return new ProfileFragment();
+            default:
+                return new MapFragment();
+        }
+    }
+
+
     private void navLoad(){
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         View header= navigationView.getHeaderView(0);
-        NavigationView footerView = (NavigationView) findViewById(R.id.navigation_drawer_bottom);
-        footerView.setNavigationItemSelectedListener(this);
+        footerView = (NavigationView) findViewById(R.id.navigation_drawer_bottom);
 
         Button viewProfile = (Button) header.findViewById(R.id.viewProfileButton);
         viewProfile.setOnClickListener(this);
@@ -99,7 +220,6 @@ public class MainActivity extends AppCompatActivity
 
         nameTextView.setText(User.getUserName());
         if (User.getImageLink()!=null){
-            // pic.setImageURI(Uri.parse(picUrl+ User.getImageLink()));
             String picUrl = "http://app.clynpro.com/image/";
             new DownLoadImageTask(pic).execute(picUrl +User.getImageLink());
         }
@@ -116,12 +236,24 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+            drawer.closeDrawers();
+            return;
         }
+        // This code loads home fragment when back key is pressed
+        // when user is in other fragment than home
+        if (shouldLoadHomeFragOnBackPress) {
+            // checking if user is on other navigation menu
+            // rather than home
+            if (navItemIndex != 0) {
+                navItemIndex = 0;
+                CURRENT_TAG = TAG_HOME;
+                loadHomeFragment();
+                return;
+            }
+        }
+
+        super.onBackPressed();
     }
 
     @Override
@@ -146,136 +278,12 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_home) {
-            new DialogShow(MainActivity.this,"Where am I?","You are at Home",getResources().getDrawable(R.drawable.ic_home_black_24dp));
-        } else if (id == R.id.nav_calender) {
-
-        } else if (id == R.id.nav_gift) {
-
-        } else if (id == R.id.nav_payments) {
-
-        } else if (id == R.id.nav_support) {
-            Intent intent = new Intent(this, SupporMainActivity.class);
-            //drawer.closeDrawers();
-            startActivity(intent);
-        } else if (id == R.id.nav_clean) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        Log.d("****Lat***", String.valueOf(gpsTracker.getLat()));
-        Log.d("****Lon***", String.valueOf(gpsTracker.getLon()));
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the User grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            //return;
-
-        }
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        mMap.setMyLocationEnabled(true);
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.getUiSettings().setRotateGesturesEnabled(true);
-        mMap.getUiSettings().setCompassEnabled(true);
-        mMap.getUiSettings().setRotateGesturesEnabled(true);
-        mMap.getUiSettings().setZoomGesturesEnabled(true);
-        /*LatLng sydney = new LatLng(gpsTracker.getLat(), gpsTracker.getLon());
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Bangladesh"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
-        //mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-
-        for (int i = 0; i < 10; i++) {
-            // random latitude and logitude
-            double[] randomLocation = createRandLocation(gpsTracker.getLat(),
-                    gpsTracker.getLon());
-
-            // Adding a marker
-            MarkerOptions marker = new MarkerOptions().position(
-                    new LatLng(randomLocation[0], randomLocation[1]))
-                    .title("Hello Maps " + i);
-
-            Log.e("Random", "> " + randomLocation[0] + ", "
-                    + randomLocation[1]);
-
-            // changing marker color
-            if (i == 0)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-            if (i == 1)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-            if (i == 2)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-            if (i == 3)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-            if (i == 4)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-            if (i == 5)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-            if (i == 6)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_RED));
-            if (i == 7)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-            if (i == 8)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
-            if (i == 9)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-
-            mMap.addMarker(marker);
-
-            // Move the camera to last position with a zoom level
-            if (i == 9) {
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(gpsTracker.getLat(),
-                                gpsTracker.getLon())).zoom(17).build();
-
-
-                mMap.animateCamera(CameraUpdateFactory
-                        .newCameraPosition(cameraPosition));
-            }
-        }
-
-    }
-
-    private double[] createRandLocation(double latitude, double longitude) {
-
-        return new double[] { latitude + ((Math.random() - 0.5) / 500),
-                longitude + ((Math.random() - 0.5) / 500),
-                150 + ((Math.random() - 0.5) * 50) };
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.viewProfileButton:
                 Intent intent = new Intent(this, ProfileActivity.class);
-               // drawer.closeDrawers();
+                drawer.closeDrawers();
                 startActivity(intent);
                 break;
 
