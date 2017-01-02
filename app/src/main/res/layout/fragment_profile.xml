@@ -6,12 +6,192 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ns.siddiqui.sazal.clny_v20.ProfileFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.ns.siddiqui.sazal.clny_v20.ProfileFragment"
+    android:background="@drawable/bg">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/profile_head_bg">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/proPic"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@android:drawable/sym_def_app_icon"
+                app:civ_border_width="8dp"
+                android:layout_gravity="center"
+                app:civ_border_color="#72c697"/>
+
+            <TextView
+                android:text="FUll Name"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/nameTextView"
+                android:textColor="#72c697"
+                android:textStyle="bold"
+                android:textSize="15sp"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="4dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_place_black_24dp"
+                    android:id="@+id/imageView2"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:text="Address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/addressTextView"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="4dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_insert_invitation_green_24dp"
+                    android:id="@+id/imageView3"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:text="Join Date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/joinTextView" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="4dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/white"
+                android:layout_marginRight="2dp">
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:hint="First Name"
+                    android:paddingLeft="8dp"
+                    android:ems="10"
+                    android:id="@+id/firstNameEditText"
+                    android:layout_weight="1"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/white"
+                android:layout_marginLeft="2dp">
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:hint="Last Name"
+                    android:paddingLeft="8dp"
+                    android:ems="10"
+                    android:id="@+id/lastNameEditText"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <EditText
+            android:hint="Your Full Address"
+            android:gravity="top"
+            android:padding="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:inputType="textMultiLine"
+            android:ems="10"
+            android:id="@+id/fullAddressEditText"
+            android:background="@android:color/white"/>
+
+        <EditText
+            android:hint="Write Something About You...."
+            android:gravity="top"
+            android:padding="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:inputType="textMultiLine"
+            android:ems="10"
+            android:id="@+id/bioEditText"
+            android:background="@android:color/white"/>
+
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:inputType="textPersonName"
+            android:hint="Name of Your Favourite Song"
+            android:ems="10"
+            android:paddingLeft="8dp"
+            android:id="@+id/favSongEditText"
+            android:background="@android:color/white"
+            android:layout_marginTop="4dp"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:inputType="textPersonName"
+            android:hint="Name of Your Pet"
+            android:paddingLeft="8dp"
+            android:ems="10"
+            android:background="@android:color/white"
+            android:layout_marginTop="4dp"
+            android:id="@+id/favPetEditText" />
+        <Button
+            android:text=" Save Changes "
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="18dp"
+            android:id="@+id/saveChangesButton"
+            android:background="@color/background"/>
+
+    </LinearLayout>
 
 </FrameLayout>

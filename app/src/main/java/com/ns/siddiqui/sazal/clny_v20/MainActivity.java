@@ -31,11 +31,7 @@ import com.ns.siddiqui.sazal.clny_v20.model.User;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity
-        implements  View.OnClickListener{
-
-    private GoogleMap mMap;
-    private GPSTracker gpsTracker;
+public class MainActivity extends AppCompatActivity implements  View.OnClickListener{
 
     public static int navItemIndex = 0;
 
@@ -62,15 +58,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mHandler = new Handler();
-
-       /* Button fab = (Button) findViewById(R.id.fabButton);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
 
         preInti();
 
@@ -103,14 +90,20 @@ public class MainActivity extends AppCompatActivity
                         CURRENT_TAG = TAG_FREE;
                         break;
                     case R.id.nav_calender:
+                        if (CURRENT_TAG.equals(TAG_FREE))
+                            new DialogShow(MainActivity.this,"Where am I?","You are at Free Clyn",getResources().getDrawable(R.drawable.ic_insert_invitation_black_24dp));
                         navItemIndex = 2;
                         CURRENT_TAG = TAG_CALENDER;
                         break;
                     case R.id.nav_payments:
+                        if (CURRENT_TAG.equals(TAG_FREE))
+                            new DialogShow(MainActivity.this,"Where am I?","You are at Free Clyn",getResources().getDrawable(R.drawable.ic_credit_card_black_24dp));
                         navItemIndex = 3;
                         CURRENT_TAG = TAG_PAYMENT;
                         break;
                     case R.id.nav_clean:
+                        if (CURRENT_TAG.equals(TAG_FREE))
+                            new DialogShow(MainActivity.this,"Where am I?","You are at Free Clyn",getResources().getDrawable(R.drawable.ic_brush_black_24dp));
                         navItemIndex = 4;
                         CURRENT_TAG = TAG_CLEAN;
                         break;
@@ -195,7 +188,7 @@ public class MainActivity extends AppCompatActivity
 
     private Fragment getHomeFragment() {
         switch (navItemIndex) {
-            case 1:
+            case 10:
                 return new ProfileFragment();
             default:
                 return new MapFragment();
@@ -215,11 +208,21 @@ public class MainActivity extends AppCompatActivity
 
         Button viewProfile = (Button) header.findViewById(R.id.viewProfileButton);
         viewProfile.setOnClickListener(this);
+
         CircleImageView pic = (CircleImageView) header.findViewById(R.id.pic);
         TextView nameTextView = (TextView) header.findViewById(R.id.nameTextView);
 
-        nameTextView.setText(User.getUserName());
-        if (User.getImageLink()!=null){
+        if (User.getFirstName()!="null" && User.getLastName()!="null"){
+            nameTextView.setText(User.getFirstName()+" "+User.getLastName());
+        }else if (User.getFirstName()!="null"){
+            nameTextView.setText(User.getFirstName());
+        }else if (User.getLastName()!="null"){
+            nameTextView.setText(User.getLastName());
+        }else {
+            nameTextView.setText(User.getUserName());
+        }
+
+        if (User.getImageLink()!="null"){
             String picUrl = "http://app.clynpro.com/image/";
             new DownLoadImageTask(pic).execute(picUrl +User.getImageLink());
         }
@@ -282,12 +285,10 @@ public class MainActivity extends AppCompatActivity
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.viewProfileButton:
-                Intent intent = new Intent(this, ProfileActivity.class);
-                drawer.closeDrawers();
-                startActivity(intent);
+                navItemIndex = 10;
+                CURRENT_TAG = TAG_SUPPORT;
                 break;
-
         }
-
+        loadHomeFragment();
     }
 }
