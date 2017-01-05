@@ -6,29 +6,49 @@ package com.ns.siddiqui.sazal.clny_v20;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppConfig;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
+import com.ns.siddiqui.sazal.clny_v20.helpingHand.PrefUtils;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.SQLiteHandler;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.SessionManager;
+import com.ns.siddiqui.sazal.clny_v20.model.FbUser;
 import com.ns.siddiqui.sazal.clny_v20.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,10 +65,42 @@ public class LoginActivity extends AppCompatActivity {
     private SessionManager session;
     private SQLiteHandler db;
 
+    private CallbackManager callbackManager;
+    private LoginButton loginButton;
+    FbUser user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
+
+        callbackManager = CallbackManager.Factory.create();
+
+        if(PrefUtils.getCurrentUser(LoginActivity.this) != null){
+
+            /*Intent homeIntent = new Intent(LoginActivity.this, LogoutActivity.class);
+            startActivity(homeIntent);
+            finish();*/
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.putExtra("fb","itIs");
+            startActivity(intent);
+            finish();
+        }
+
+/*
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.ns.siddiqui.sazal.clny_v20",
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.e("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }*/
 
         preInit();
 
@@ -92,6 +144,7 @@ public class LoginActivity extends AppCompatActivity {
         singInButton.setOnClickListener(onClickListener);
         fbLoginButton = (Button) findViewById(R.id.fbLoginButton);
         fbLoginButton.setTypeface(roboto);
+        fbLoginButton.setOnClickListener(onClickListener);
         googleButton = (Button) findViewById(R.id.googleButton);
         googleButton.setTypeface(roboto);
         phoneButton = (Button) findViewById(R.id.phoneButton);
@@ -101,6 +154,8 @@ public class LoginActivity extends AppCompatActivity {
         SingUpButton.setOnClickListener(onClickListener);
         ToUButton = (Button) findViewById(R.id.ToUButton);
         ToUButton.setTypeface(roboto);
+
+        loginButton= (LoginButton) findViewById(R.id.login_button);
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -113,7 +168,101 @@ public class LoginActivity extends AppCompatActivity {
                     break;
                 case R.id.singInButton:
                     doLogin(userNameEditText.getText().toString().trim(), passwordEditText.getText().toString().trim());
+                    break;
             }
+        }
+    };
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        callbackManager=CallbackManager.Factory.create();
+
+        loginButton.setReadPermissions("public_profile", "email","user_friends");
+
+        fbLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                pDialog.setMessage("Loading...");
+                pDialog.show();
+
+                loginButton.performClick();
+
+                loginButton.setPressed(true);
+
+                loginButton.invalidate();
+
+                loginButton.registerCallback(callbackManager, mCallBack);
+
+                loginButton.setPressed(false);
+
+                loginButton.invalidate();
+
+            }
+        });
+
+    }
+
+    private FacebookCallback<LoginResult> mCallBack = new FacebookCallback<LoginResult>() {
+        @Override
+        public void onSuccess(LoginResult loginResult) {
+            pDialog.dismiss();
+
+            // App code
+            GraphRequest request = GraphRequest.newMeRequest(
+                    loginResult.getAccessToken(),
+                    new GraphRequest.GraphJSONObjectCallback() {
+                        @Override
+                        public void onCompleted(
+                                JSONObject object,
+                                GraphResponse response) {
+
+                            Log.e("response: ", response + "");
+                            try {
+                                user = new FbUser();
+                                user.facebookID = object.getString("id");
+                                user.email = object.getString("email");
+                                user.name = object.getString("name");
+                                user.gender = object.getString("gender");
+                                PrefUtils.setCurrentUser(user,LoginActivity.this);
+
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.putExtra("fb","itIs");
+                            startActivity(intent);
+                            finish();
+                        }
+
+                    });
+
+            Bundle parameters = new Bundle();
+            parameters.putString("fields", "id,name,email,gender, birthday");
+            request.setParameters(parameters);
+            request.executeAsync();
+        }
+
+        @Override
+        public void onCancel() {
+            pDialog.dismiss();
+            Log.d("*****Cancel****","On cancel");
+        }
+
+        @Override
+        public void onError(FacebookException error) {
+            pDialog.dismiss();
+            Log.d("****Error****",error.toString());
         }
     };
 
@@ -154,8 +303,8 @@ public class LoginActivity extends AppCompatActivity {
                             User.setUpdatedOn(object.getString("updatedOn"));
 
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            finish();
                             startActivity(intent);
+                            finish();
 
 
                     } catch (JSONException e) {

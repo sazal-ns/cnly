@@ -7,8 +7,12 @@ package com.ns.siddiqui.sazal.clny_v20;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,14 +32,17 @@ import com.android.volley.toolbox.Volley;
 import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppConfig;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DownLoadImageTask;
+import com.ns.siddiqui.sazal.clny_v20.helpingHand.SaveImage;
 import com.ns.siddiqui.sazal.clny_v20.model.User;
 
-import org.w3c.dom.Text;
-
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 
 /**
@@ -62,10 +70,16 @@ public class ProfileFragment extends Fragment {
     private TextView nameTextView,addressTextView,joinTextView;
     private EditText firstNameEditText,lastNameEditText,fullAddressEditText,bioEditText,favSongEditText,favPetEditText;
     private Button saveChangesButton;
+    private ImageButton uploadImageButton;
 
     private ProgressDialog pDialog;
 
     private String firstName, lastName, fullAddress, bio, favSong, favPet;
+
+    private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
+    public static final int MEDIA_TYPE_IMAGE = 1;
+    private static final String IMAGE_DIRECTORY_NAME = "CLYN";
+    private Uri fileUri;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -99,8 +113,7 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_profile, container, false);
         init();
@@ -128,83 +141,113 @@ public class ProfileFragment extends Fragment {
         saveChangesButton = (Button) view.findViewById(R.id.saveChangesButton);
         saveChangesButton.setOnClickListener(onClickListener);
 
+        uploadImageButton = (ImageButton) view.findViewById(R.id.uploadImageButton);
+        uploadImageButton.setOnClickListener(onClickListener);
+
+
+
         loadData();
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-             firstName = firstNameEditText.getText().toString().trim();
-             lastName = lastNameEditText.getText().toString().trim();
-             fullAddress = fullAddressEditText.getText().toString().trim();
-             bio = bioEditText.getText().toString().trim();
-             favSong = favSongEditText.getText().toString().trim();
-             favPet = favPetEditText.getText().toString().trim();
+            switch (v.getId()) {
+                case R.id.saveChangesButton:
+                firstName = firstNameEditText.getText().toString().trim();
+                lastName = lastNameEditText.getText().toString().trim();
+                fullAddress = fullAddressEditText.getText().toString().trim();
+                bio = bioEditText.getText().toString().trim();
+                favSong = favSongEditText.getText().toString().trim();
+                favPet = favPetEditText.getText().toString().trim();
 
-            if (firstName.isEmpty()){ firstName = "null"; }
-            if (lastName.isEmpty()){ lastName = "null"; }
-            if (fullAddress.isEmpty()){ fullAddress = "null"; }
-            if (bio.isEmpty()){ bio = "null"; }
-            if (favSong.isEmpty()){ favSong = "null"; }
-            if (favPet.isEmpty()){ favPet = "null"; }
+                if (firstName.isEmpty()) {
+                    firstName = "null";
+                }
+                if (lastName.isEmpty()) {
+                    lastName = "null";
+                }
+                if (fullAddress.isEmpty()) {
+                    fullAddress = "null";
+                }
+                if (bio.isEmpty()) {
+                    bio = "null";
+                }
+                if (favSong.isEmpty()) {
+                    favSong = "null";
+                }
+                if (favPet.isEmpty()) {
+                    favPet = "null";
+                }
 
-            pDialog.setMessage("Updating...");
-            showDialog();
+                pDialog.setMessage("Updating...");
+                showDialog();
 
-            StringRequest request = new StringRequest(Request.Method.POST, AppConfig.URL_UPDATE_INFO, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    Log.d("OnResponse", "Update Response: " + response);
-                    hideDialog();
-                    if (response.contains("false")){
-                        new DialogShow(getContext(),"Successful","Info Update Successfully",getResources().getDrawable(R.drawable.ic_done_all_black_24dp));
-                        User.setFirstName(firstName);
-                        User.setLastName(lastName);
-                        User.setFullAddress(fullAddress);
-                        User.setBio(bio);
-                        User.setFavMusic(favSong);
-                        User.setFavPet(favPet);
+                StringRequest request = new StringRequest(Request.Method.POST, AppConfig.URL_UPDATE_INFO, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("OnResponse", "Update Response: " + response);
+                        hideDialog();
+                        if (response.contains("false")) {
+                            new DialogShow(getContext(), "Successful", "Info Update Successfully", getResources().getDrawable(R.drawable.ic_done_all_black_24dp));
+                            User.setFirstName(firstName);
+                            User.setLastName(lastName);
+                            User.setFullAddress(fullAddress);
+                            User.setBio(bio);
+                            User.setFavMusic(favSong);
+                            User.setFavPet(favPet);
+                        } else {
+                            new DialogShow(getContext(), "Error?", response, getResources().getDrawable(R.drawable.error_icon));
+                        }
                     }
-                    else{
-                        new DialogShow(getContext(),"Error?",response,getResources().getDrawable(R.drawable.error_icon));
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("OnErrorResponse", "Registration Error: " + error.getMessage());
+                        //Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                        new DialogShow(getContext(), "Error?", error.getMessage() + "Server Problem!!!\n Please Try Again", getResources().getDrawable(R.drawable.error_icon));
+                        hideDialog();
                     }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e("OnErrorResponse", "Registration Error: " + error.getMessage());
-                    //Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
-                    new DialogShow(getContext(),"Error?",error.getMessage()+"Server Problem!!!\n Please Try Again",getResources().getDrawable(R.drawable.error_icon));
-                    hideDialog();
-                }
-            }){
+                }) {
 
-                @Override
-                protected Map<String, String> getParams() {
-                    // Posting params to register url
-                    Map<String, String> params = new HashMap<>();
-                    params.put("FirstName", firstName );
-                    params.put("LastName", lastName );
-                    params.put("FullAddress", fullAddress );
-                    params.put("bio", bio);
-                    params.put("FavPet", favPet );
-                    params.put("FavMusic", favSong );
-                    params.put("id", User.getId());
+                    @Override
+                    protected Map<String, String> getParams() {
+                        // Posting params to register url
+                        Map<String, String> params = new HashMap<>();
+                        params.put("FirstName", firstName);
+                        params.put("LastName", lastName);
+                        params.put("FullAddress", fullAddress);
+                        params.put("bio", bio);
+                        params.put("FavPet", favPet);
+                        params.put("FavMusic", favSong);
+                        params.put("id", User.getId());
 
-                    return params;
-                }
-            };
-            Volley.newRequestQueue(getContext()).add(request);
-
-
+                        return params;
+                    }
+                };
+                Volley.newRequestQueue(getContext()).add(request);
+                    break;
+                case R.id.uploadImageButton:
+                    if (!isDeviceSupportCamera()) {
+                        new DialogShow(getContext(), "Error?", "Sorry! Your device doesn't support camera", getResources().getDrawable(R.drawable.error_icon));
+                    }else {
+                        captureImage();}
+                    break;
+            }
         }
     };
+
+    private void captureImage() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        fileUri = SaveImage.getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+        startActivityForResult(intent, CAMERA_CAPTURE_IMAGE_REQUEST_CODE);
+    }
 
     private void loadData() {
 
         if (User.getImageLink()!="null"){
-            String picUrl = "http://app.clynpro.com/image/";
-            new DownLoadImageTask(proPic).execute(picUrl +User.getImageLink());
+            proPic.setImageBitmap(DownLoadImageTask.getLogo());
         }
         if (User.getFirstName()!="null"){
             firstNameEditText.setText(User.getFirstName());
@@ -277,6 +320,50 @@ public class ProfileFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("file_uri", fileUri);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            fileUri = savedInstanceState.getParcelable("file_uri");
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // if the result is capturing Image
+        if (requestCode == CAMERA_CAPTURE_IMAGE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+
+                // successfully captured the image
+                // launching upload activity
+                launchUploadActivity(true);
+
+
+            } else if (resultCode == RESULT_CANCELED) {
+
+                // user cancelled Image capture
+                Toast.makeText(getContext(), "User cancelled image capture", Toast.LENGTH_SHORT).show();
+
+            } else {
+                // failed to capture image
+                Toast.makeText(getContext(), "Sorry! Failed to capture image", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void launchUploadActivity(boolean isImage){
+        Intent i = new Intent(getContext(), UploadActivity.class);
+        i.putExtra("filePath", fileUri.getPath());
+        i.putExtra("isImage", isImage);
+        startActivity(i);
+    }
+
     private void showDialog() {
         if (!pDialog.isShowing())
             pDialog.show();
@@ -285,6 +372,36 @@ public class ProfileFragment extends Fragment {
     private void hideDialog() {
         if (pDialog.isShowing())
             pDialog.dismiss();
+    }
+
+    /*public Uri getOutputMediaFileUri(int type) {
+        return Uri.fromFile(getOutputMediaFile(type));
+    }
+
+    private static File getOutputMediaFile(int type) {
+        // External sdcard location
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                AppConfig.IMAGE_DIRECTORY_NAME);
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                Log.w("", "Oops! Failed create " + AppConfig.IMAGE_DIRECTORY_NAME + " directory");
+                return null;
+            }
+        }
+        File mediaFile;
+        if (type == MEDIA_TYPE_IMAGE) {
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + User.getUserName() + ".jpg");
+        } else {
+            return null;
+        }
+        return mediaFile;
+    }*/
+
+    private boolean isDeviceSupportCamera() {
+
+        return getContext().getPackageManager().hasSystemFeature(
+                PackageManager.FEATURE_CAMERA);
     }
 
 }

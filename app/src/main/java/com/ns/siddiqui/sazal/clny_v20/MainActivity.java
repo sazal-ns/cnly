@@ -6,6 +6,9 @@ package com.ns.siddiqui.sazal.clny_v20;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -27,7 +30,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DownLoadImageTask;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.GPSTracker;
+import com.ns.siddiqui.sazal.clny_v20.helpingHand.PrefUtils;
+import com.ns.siddiqui.sazal.clny_v20.model.FbUser;
 import com.ns.siddiqui.sazal.clny_v20.model.User;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -53,12 +62,19 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
     public Context context;
 
+    private FbUser user;
+    Bitmap bitmap;
+    CircleImageView pic;
+    Intent fbIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mHandler = new Handler();
 
+
+        user= PrefUtils.getCurrentUser(MainActivity.this);
         preInti();
 
         navLoad();
@@ -195,47 +211,74 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
         }
     }
 
+    private void loadFbData(){
+        new AsyncTask<Void,Void,Void>(){
+            @Override
+            protected Void doInBackground(Void... params) {
+                URL imageURL = null;
+                try {
+                    imageURL = new URL("https://graph.facebook.com/" + user.facebookID + "/picture?type=large");
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    bitmap  = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                pic.setImageBitmap(bitmap);
+            }
+        }.execute();
+    }
+
 
     private void navLoad(){
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        View header= navigationView.getHeaderView(0);
-        footerView = (NavigationView) findViewById(R.id.navigation_drawer_bottom);
+            navigationView = (NavigationView) findViewById(R.id.nav_view);
+            View header = navigationView.getHeaderView(0);
+            footerView = (NavigationView) findViewById(R.id.navigation_drawer_bottom);
 
-        Button viewProfile = (Button) header.findViewById(R.id.viewProfileButton);
-        viewProfile.setOnClickListener(this);
+            Button viewProfile = (Button) header.findViewById(R.id.viewProfileButton);
+            viewProfile.setOnClickListener(this);
 
-        CircleImageView pic = (CircleImageView) header.findViewById(R.id.pic);
-        TextView nameTextView = (TextView) header.findViewById(R.id.nameTextView);
+            pic = (CircleImageView) header.findViewById(R.id.pic);
+            TextView nameTextView = (TextView) header.findViewById(R.id.nameTextView);
 
-        if (User.getFirstName()!="null" && User.getLastName()!="null"){
-            nameTextView.setText(User.getFirstName()+" "+User.getLastName());
-        }else if (User.getFirstName()!="null"){
-            nameTextView.setText(User.getFirstName());
-        }else if (User.getLastName()!="null"){
-            nameTextView.setText(User.getLastName());
-        }else {
-            nameTextView.setText(User.getUserName());
+            if (User.getFirstName() != "null" && User.getLastName() != "null") {
+                nameTextView.setText(User.getFirstName() + " " + User.getLastName());
+            } else if (User.getFirstName() != "null") {
+                nameTextView.setText(User.getFirstName());
+            } else if (User.getLastName() != "null") {
+                nameTextView.setText(User.getLastName());
+            } else {
+                nameTextView.setText(User.getUserName());
+            }
+        if (fbIntent.getStringExtra("fb").equals("itIs")){
+            nameTextView.setText(user.name);
+            loadFbData();
         }
-
-        if (User.getImageLink()!="null"){
-            String picUrl = "http://app.clynpro.com/image/";
-            new DownLoadImageTask(pic).execute(picUrl +User.getImageLink());
-        }
-
+        else if (User.getImageLink() != "null") {
+                String picUrl = "http://app.clynpro.com/image/";
+                new DownLoadImageTask(pic).execute(picUrl + User.getImageLink());
+            }
     }
 
     private void preInti() {
-        init();
-    }
-
-    private void init() {
+        fbIntent = getIntent();
 
     }
+
 
     @Override
     public void onBackPressed() {

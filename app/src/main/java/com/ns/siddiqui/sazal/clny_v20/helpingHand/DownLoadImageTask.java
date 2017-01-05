@@ -4,10 +4,13 @@
 
 package com.ns.siddiqui.sazal.clny_v20.helpingHand;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.widget.ImageView;
+
+import com.ns.siddiqui.sazal.clny_v20.R;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -18,6 +21,11 @@ import java.net.URL;
 
 public class DownLoadImageTask extends AsyncTask<String,Void,Bitmap> {
     ImageView imageView;
+ public static   Bitmap logo = BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.ic_account_circle_black_24dp);
+
+    public static Bitmap getLogo() {
+        return logo;
+    }
 
     public DownLoadImageTask(ImageView imageView){
         this.imageView = imageView;
@@ -29,7 +37,7 @@ public class DownLoadImageTask extends AsyncTask<String,Void,Bitmap> {
      */
     protected Bitmap doInBackground(String...urls){
         String urlOfImage = urls[0];
-        Bitmap logo = null;
+        logo = BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.ic_account_circle_black_24dp);
         try{
             InputStream is = new URL(urlOfImage).openStream();
                 /*

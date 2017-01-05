@@ -9,11 +9,14 @@ package com.ns.siddiqui.sazal.clny_v20.AppConfig;
  */
 
 public final class AppConfig {
-    // Server User login url
+
     public static String URL_LOGIN = "http://app.clynpro.com/login.php";
 
-    // Server User register url
     public static String URL_REGISTER = "http://app.clynpro.com/register.php";
 
     public static String URL_UPDATE_INFO = "http://app.clynpro.com/infoUpdate.php";
+
+    public static final String FILE_UPLOAD_URL = "http://app.clynpro.com/fileUpload.php";
+
+    public static final String IMAGE_DIRECTORY_NAME = "CLYN";
 }
