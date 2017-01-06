@@ -11,9 +11,11 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -26,6 +28,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.facebook.login.LoginManager;
 import com.google.android.gms.maps.GoogleMap;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DownLoadImageTask;
@@ -301,6 +304,43 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
         super.onBackPressed();
     }
+
+
+    @Override
+    protected void onUserLeaveHint() {
+
+
+        PrefUtils.clearCurrentUser(MainActivity.this);
+        // We can logout from facebook by calling following method
+        LoginManager.getInstance().logOut();
+        Log.e("Logout","Done in onUserLeaveHint");
+
+        super.onUserLeaveHint();
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        PrefUtils.clearCurrentUser(MainActivity.this);
+        // We can logout from facebook by calling following method
+        LoginManager.getInstance().logOut();
+        Log.e("Logout","Done");
+
+        super.onDestroy();
+    }
+   /* @Override
+    protected void onPause() {
+
+
+        if (isFinishing()){
+            Log.e("Logout","Done in onPause");
+            PrefUtils.clearCurrentUser(MainActivity.this);
+            // We can logout from facebook by calling following method
+            LoginManager.getInstance().logOut();
+        }
+
+        super.onPause();
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

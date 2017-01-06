@@ -35,8 +35,7 @@ public class ComplexPreferences {
         editor = preferences.edit();
     }
 
-    public static ComplexPreferences getComplexPreferences(Context context,
-                                                           String namePreferences, int mode) {
+    public static ComplexPreferences getComplexPreferences(Context context, String namePreferences, int mode) {
 
 //		if (complexPreferences == null) {
         complexPreferences = new ComplexPreferences(context,

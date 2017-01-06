@@ -78,10 +78,6 @@ public class LoginActivity extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
 
         if(PrefUtils.getCurrentUser(LoginActivity.this) != null){
-
-            /*Intent homeIntent = new Intent(LoginActivity.this, LogoutActivity.class);
-            startActivity(homeIntent);
-            finish();*/
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra("fb","itIs");
             startActivity(intent);
