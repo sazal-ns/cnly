@@ -32,7 +32,9 @@ import com.android.volley.toolbox.Volley;
 import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppConfig;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DownLoadImageTask;
+import com.ns.siddiqui.sazal.clny_v20.helpingHand.PrefUtils;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.SaveImage;
+import com.ns.siddiqui.sazal.clny_v20.model.FbUser;
 import com.ns.siddiqui.sazal.clny_v20.model.User;
 
 import java.io.File;
@@ -145,7 +147,6 @@ public class ProfileFragment extends Fragment {
         uploadImageButton.setOnClickListener(onClickListener);
 
 
-
         loadData();
     }
 
@@ -196,6 +197,7 @@ public class ProfileFragment extends Fragment {
                             User.setBio(bio);
                             User.setFavMusic(favSong);
                             User.setFavPet(favPet);
+                            loadData();
                         } else {
                             new DialogShow(getContext(), "Error?", response, getResources().getDrawable(R.drawable.error_icon));
                         }
@@ -245,40 +247,47 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadData() {
+        if(PrefUtils.getCurrentUser(getContext()) != null) {
 
-        if (User.getImageLink()!="null"){
-            proPic.setImageBitmap(DownLoadImageTask.getLogo());
+            uploadImageButton.setVisibility(View.GONE);
+            proPic.setImageBitmap(MainActivity.bitmap);
+            nameTextView.setText(FbUser.name);
+            firstNameEditText.setText(FbUser.first_name);
+            lastNameEditText.setText(FbUser.last_name);
+        }else {
+            if (!User.getImageLink().contains("null")) {
+                proPic.setImageBitmap(DownLoadImageTask.getLogo());
+            }
         }
-        if (User.getFirstName()!="null"){
+        if (!User.getFirstName().contains("null")) {
             firstNameEditText.setText(User.getFirstName());
         }
-        if (User.getLastName()!="null"){
+        if (!User.getLastName().contains("null")) {
             lastNameEditText.setText(User.getLastName());
         }
-        if (User.getBio()!="null"){
+        if (!User.getBio().contains("null")) {
             bioEditText.setText(User.getBio());
         }
-        if (User.getFullAddress()!="null"){
+        if (!User.getFullAddress().contains("null")) {
             fullAddressEditText.setText(User.getFullAddress());
             addressTextView.setText(User.getFullAddress());
         }
-        if(User.getFavMusic()!= "null"){
+        if (!User.getFavMusic().contains("null")) {
             favSongEditText.setText(User.getFavMusic());
         }
-        if (User.getFavPet()!="null"){
+        if (!User.getFavPet().contains("null")) {
             favPetEditText.setText(User.getFavPet());
         }
 
         joinTextView.setText(User.getCreatedOn());
 
-        if (User.getFirstName()!="null" && User.getLastName()!="null"){
-            nameTextView.setText(User.getFirstName()+" "+User.getLastName());
-        }else if (User.getFirstName()!="null"){
+        if (!User.getFirstName().contains("null") && !User.getLastName().contains("null")) {
+            nameTextView.setText(User.getFirstName() + " " + User.getLastName());
+        } else if (!User.getFirstName().contains("null")) {
             nameTextView.setText(User.getFirstName());
-        }else if (User.getLastName()!="null"){
+        } else if (!User.getLastName().contains("null")) {
             nameTextView.setText(User.getLastName());
         }
-
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -374,29 +383,6 @@ public class ProfileFragment extends Fragment {
             pDialog.dismiss();
     }
 
-    /*public Uri getOutputMediaFileUri(int type) {
-        return Uri.fromFile(getOutputMediaFile(type));
-    }
-
-    private static File getOutputMediaFile(int type) {
-        // External sdcard location
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                AppConfig.IMAGE_DIRECTORY_NAME);
-        // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                Log.w("", "Oops! Failed create " + AppConfig.IMAGE_DIRECTORY_NAME + " directory");
-                return null;
-            }
-        }
-        File mediaFile;
-        if (type == MEDIA_TYPE_IMAGE) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + User.getUserName() + ".jpg");
-        } else {
-            return null;
-        }
-        return mediaFile;
-    }*/
 
     private boolean isDeviceSupportCamera() {
 

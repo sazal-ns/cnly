@@ -66,9 +66,9 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
     public Context context;
 
     private FbUser user;
-    Bitmap bitmap;
+    public static Bitmap bitmap;
     CircleImageView pic;
-    Intent fbIntent;
+   public  Intent fbIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -309,7 +309,6 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
     @Override
     protected void onUserLeaveHint() {
 
-
         PrefUtils.clearCurrentUser(MainActivity.this);
         // We can logout from facebook by calling following method
         LoginManager.getInstance().logOut();
@@ -320,7 +319,6 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
     @Override
     protected void onDestroy() {
-
         PrefUtils.clearCurrentUser(MainActivity.this);
         // We can logout from facebook by calling following method
         LoginManager.getInstance().logOut();
@@ -328,19 +326,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
         super.onDestroy();
     }
-   /* @Override
-    protected void onPause() {
 
-
-        if (isFinishing()){
-            Log.e("Logout","Done in onPause");
-            PrefUtils.clearCurrentUser(MainActivity.this);
-            // We can logout from facebook by calling following method
-            LoginManager.getInstance().logOut();
-        }
-
-        super.onPause();
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

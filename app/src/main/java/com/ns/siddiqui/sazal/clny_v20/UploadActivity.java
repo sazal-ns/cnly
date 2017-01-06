@@ -56,6 +56,7 @@ public class UploadActivity extends AppCompatActivity {
     private ImageButton roteLeftImageButton,roteRightImageButton;
     long totalSize = 0;
     float angle=0;
+    Intent fbIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

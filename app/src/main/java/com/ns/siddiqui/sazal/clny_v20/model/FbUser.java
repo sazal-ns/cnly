@@ -9,9 +9,11 @@ package com.ns.siddiqui.sazal.clny_v20.model;
  */
 import com.google.gson.annotations.SerializedName;
 
-public class FbUser {
-    public String name;
-    public String email;
-    public String facebookID;
-    public String gender;
+public class  FbUser {
+    public static String name;
+    public static String email;
+    public static String facebookID;
+    public static String gender;
+    public static String first_name;
+    public static String last_name;
 }

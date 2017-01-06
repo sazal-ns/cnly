@@ -225,6 +225,8 @@ public class LoginActivity extends AppCompatActivity {
                                 user.email = object.getString("email");
                                 user.name = object.getString("name");
                                 user.gender = object.getString("gender");
+                                user.first_name = object.getString("first_name");
+                                user.last_name = object.getString("last_name");
                                 PrefUtils.setCurrentUser(user,LoginActivity.this);
 
                                 registerUser(user.facebookID,user.email,user.facebookID);
@@ -241,7 +243,7 @@ public class LoginActivity extends AppCompatActivity {
                     });
 
             Bundle parameters = new Bundle();
-            parameters.putString("fields", "id,name,email,gender, birthday");
+            parameters.putString("fields", "id,name,email,gender,first_name,last_name");
             request.setParameters(parameters);
             request.executeAsync();
         }
