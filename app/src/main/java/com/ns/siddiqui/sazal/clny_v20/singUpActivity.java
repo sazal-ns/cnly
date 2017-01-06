@@ -93,6 +93,12 @@ public class SingUpActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStop() {
+        finish();
+        super.onStop();
+    }
+
     private void registerUser(final String name, final String email, final String password) {
         // Tag used to cancel the request
         String tag_string_req = "req_register";

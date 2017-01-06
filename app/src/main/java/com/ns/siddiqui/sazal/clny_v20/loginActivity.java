@@ -61,6 +61,7 @@ public class LoginActivity extends AppCompatActivity {
    private Typeface roboto;
     Intent intent;
 
+
     private ProgressDialog pDialog;
     private SessionManager session;
     private SQLiteHandler db;
@@ -68,6 +69,8 @@ public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private LoginButton loginButton;
     FbUser user;
+
+    private boolean fb = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +107,7 @@ public class LoginActivity extends AppCompatActivity {
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
 
+
         // SQLite database handler
         db = new SQLiteHandler(getApplicationContext());
 
@@ -114,6 +118,7 @@ public class LoginActivity extends AppCompatActivity {
         if (session.isLoggedIn()) {
             // User is already logged in. Take him to main activity
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.putExtra("fb","fuck");
             startActivity(intent);
             finish();
         }
@@ -160,7 +165,6 @@ public class LoginActivity extends AppCompatActivity {
             switch (v.getId()){
                 case R.id.SingUpButton:
                     startActivity(new Intent(LoginActivity.this, SingUpActivity.class));
-                    finish();
                     break;
                 case R.id.singInButton:
                     doLogin(userNameEditText.getText().toString().trim(), passwordEditText.getText().toString().trim());
@@ -188,22 +192,12 @@ public class LoginActivity extends AppCompatActivity {
         fbLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                pDialog.setMessage("Loading...");
-                pDialog.show();
-
                 loginButton.performClick();
-
                 loginButton.setPressed(true);
-
                 loginButton.invalidate();
-
                 loginButton.registerCallback(callbackManager, mCallBack);
-
                 loginButton.setPressed(false);
-
                 loginButton.invalidate();
-
             }
         });
 
@@ -212,7 +206,7 @@ public class LoginActivity extends AppCompatActivity {
     private FacebookCallback<LoginResult> mCallBack = new FacebookCallback<LoginResult>() {
         @Override
         public void onSuccess(LoginResult loginResult) {
-            pDialog.dismiss();
+            hideDialog();
 
             // App code
             GraphRequest request = GraphRequest.newMeRequest(
@@ -224,6 +218,7 @@ public class LoginActivity extends AppCompatActivity {
                                 GraphResponse response) {
 
                             Log.e("response: ", response + "");
+                            Log.e("response object: ", object.toString() + "");
                             try {
                                 user = new FbUser();
                                 user.facebookID = object.getString("id");
@@ -231,6 +226,8 @@ public class LoginActivity extends AppCompatActivity {
                                 user.name = object.getString("name");
                                 user.gender = object.getString("gender");
                                 PrefUtils.setCurrentUser(user,LoginActivity.this);
+
+                                registerUser(user.facebookID,user.email,user.facebookID);
 
                             }catch (Exception e){
                                 e.printStackTrace();
@@ -251,28 +248,62 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         public void onCancel() {
-            pDialog.dismiss();
             Log.d("*****Cancel****","On cancel");
         }
 
         @Override
         public void onError(FacebookException error) {
-            pDialog.dismiss();
             Log.d("****Error****",error.toString());
         }
     };
 
+    private void registerUser(final String name, final String email, final String password) {
+        // Tag used to cancel the request
+        String tag_string_req = "req_register";
+
+        StringRequest request = new StringRequest(Request.Method.POST, AppConfig.URL_REGISTER, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                fb = true;
+                doLogin(user.facebookID,user.facebookID);
+                Log.d("OnResponse", "Register Response: " + response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("OnErrorResponse", "Registration Error: " + error.getMessage());
+                //Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                //hideDialog();
+            }
+        }){
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<>();
+                params.put("userName", name);
+                params.put("emailAddress", email);
+                params.put("password", password);
+
+                return params;
+            }
+        };
+        Volley.newRequestQueue(this).add(request);
+    }
+
     private void doLogin(final String email, final String password) {
 
-        pDialog.setMessage("Logging in ...");
-        showDialog();
+        if (!fb) {
+            pDialog.setMessage("Logging in ...");
+            showDialog();
+        }
 
         StringRequest request = new StringRequest(Request.Method.POST, AppConfig.URL_LOGIN, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
                 Log.d("check login", "Login Response: " + response);
-                hideDialog();
+                if (!fb) hideDialog();
                 JSONObject object1 = null;
                 try {
                     object1 = new JSONObject(response);
@@ -282,6 +313,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.contains("false")){
                     try {
 
+                        assert object1 != null;
                         JSONObject object = new JSONObject(object1.getString("user"));
 
                             User.setUserName(object.getString("user"));
@@ -298,10 +330,12 @@ public class LoginActivity extends AppCompatActivity {
                             User.setUnique_id(object.getString("u_id"));
                             User.setUpdatedOn(object.getString("updatedOn"));
 
+                        if (!fb) {
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.putExtra("fb", "fuck");
                             startActivity(intent);
                             finish();
-
+                        }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -311,6 +345,7 @@ public class LoginActivity extends AppCompatActivity {
                     try {
                         /*dialogShow(object1.getString("error_msg"));*/
                         assert object1 != null;
+                        if (!fb)
                         new DialogShow(LoginActivity.this,"Login Failed !!!",object1.getString("error_msg"),getResources().getDrawable(R.mipmap.ic_alert));
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -324,7 +359,7 @@ public class LoginActivity extends AppCompatActivity {
                 Log.e("chekc login", "Login Error: " + error.getMessage());
                 /*dialogShow(error.getMessage()+"\n Please Try Again");*/
                 new DialogShow( LoginActivity.this,"Server Error","Please Try Again",getResources().getDrawable(R.mipmap.ic_alert));
-                hideDialog();
+                if (!fb) hideDialog();
             }
         }) {
 
