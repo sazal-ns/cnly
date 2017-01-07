@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "322070483177",
+    "project_id": "quantum-weft-151001"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322070483177:android:372e9a42d18a3340",
+        "android_client_info": {
+          "package_name": "com.ns.siddiqui.sazal.clny_v20"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "322070483177-135c9tsqioladr4hih1kbh3co84199ds.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ns.siddiqui.sazal.clny_v20",
+            "certificate_hash": "E075F412AB7C60BDA345C7BF4C35E59DD92EBC43"
+          }
+        },
+        {
+          "client_id": "322070483177-j53grife6u33hp2276gv725ic8oogdk1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDt6BVPPhBtVVjgeeYTfH9enxTAIAsKeDQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
