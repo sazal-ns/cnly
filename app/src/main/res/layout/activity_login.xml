@@ -50,6 +50,7 @@
             android:layout_height="@dimen/sing_in_layout_height"
             android:inputType="textPersonName"
             android:hint="@string/user_name"
+            android:textColorHint="@android:color/white"
             android:ems="10"
             android:id="@+id/userNameEditText"
             android:layout_gravity="center"
@@ -65,6 +66,7 @@
             android:ems="10"
             android:id="@+id/passwordEditText"
             android:hint="@string/password"
+            android:textColorHint="@android:color/white"
             android:textAlignment="center"
             android:background="#6dc393"
             android:layout_marginTop="3dp"/>
@@ -117,6 +119,12 @@
             android:background="#cc3433"
             android:layout_marginTop="5dp"
             android:textColor="@android:color/white"/>
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/btn_sign_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
 
         <Button
             android:text="@string/phone"

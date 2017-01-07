@@ -254,6 +254,9 @@ public class ProfileFragment extends Fragment {
             nameTextView.setText(FbUser.name);
             firstNameEditText.setText(FbUser.first_name);
             lastNameEditText.setText(FbUser.last_name);
+            if (!User.getImageLink().contains("app.clynpro")) {
+                proPic.setImageBitmap(DownLoadImageTask.getLogo());
+            }
         }else {
             if (!User.getImageLink().contains("null")) {
                 proPic.setImageBitmap(DownLoadImageTask.getLogo());

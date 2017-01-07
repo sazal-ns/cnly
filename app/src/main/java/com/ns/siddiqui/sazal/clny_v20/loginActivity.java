@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
@@ -35,6 +36,16 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.OptionalPendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppConfig;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.PrefUtils;
@@ -53,13 +64,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
 
    private TextView singinTextView,login_singup_textView,aggreeTextView;
    private EditText userNameEditText,passwordEditText;
    private Button singInButton,fbLoginButton,googleButton,phoneButton,SingUpButton,ToUButton;
    private Typeface roboto;
     Intent intent;
+    Intent mIntent;
 
 
     private ProgressDialog pDialog;
@@ -69,6 +81,10 @@ public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private LoginButton loginButton;
     FbUser user;
+
+    private static final int RC_SIGN_IN = 007;
+    private GoogleApiClient mGoogleApiClient;
+    private SignInButton btnSignIn;
 
     private boolean fb = false;
 
@@ -122,6 +138,18 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().requestId().build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+        // Customizing G+ button
+        btnSignIn.setSize(SignInButton.SIZE_STANDARD);
+        btnSignIn.setScopes(gso.getScopeArray());
+
     }
 
     private void preInit() {
@@ -145,9 +173,9 @@ public class LoginActivity extends AppCompatActivity {
         singInButton.setOnClickListener(onClickListener);
         fbLoginButton = (Button) findViewById(R.id.fbLoginButton);
         fbLoginButton.setTypeface(roboto);
-        fbLoginButton.setOnClickListener(onClickListener);
         googleButton = (Button) findViewById(R.id.googleButton);
         googleButton.setTypeface(roboto);
+        googleButton.setOnClickListener(onClickListener);
         phoneButton = (Button) findViewById(R.id.phoneButton);
         phoneButton.setTypeface(roboto);
         SingUpButton = (Button) findViewById(R.id.SingUpButton);
@@ -157,6 +185,8 @@ public class LoginActivity extends AppCompatActivity {
         ToUButton.setTypeface(roboto);
 
         loginButton= (LoginButton) findViewById(R.id.login_button);
+        btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
+
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -169,16 +199,79 @@ public class LoginActivity extends AppCompatActivity {
                 case R.id.singInButton:
                     doLogin(userNameEditText.getText().toString().trim(), passwordEditText.getText().toString().trim());
                     break;
+                case R.id.googleButton:
+                    signIn();
+                    break;
             }
         }
     };
 
+    private void signIn() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    private void signOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                    }
+                });
+    }
+
+    private void handleSignInResult(GoogleSignInResult result) {
+        fb = true;
+        Log.d("G+", "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            GoogleSignInAccount acct = result.getSignInAccount();
+
+            Log.e("G+", "display name: " + acct.getDisplayName());
+
+            String personName = acct.getDisplayName();
+            String personPhotoUrl = acct.getPhotoUrl().toString();
+            String email = acct.getEmail();
+            String id = acct.getId();
+
+            user = new FbUser();
+            user.name= personName;
+            user.email= email;
+            user.facebookID = id;
+            User.setImageLink(personPhotoUrl);
+
+            PrefUtils.setCurrentUser(user,LoginActivity.this);
+
+            Log.e("G+", "Name: " + personName + ", email: " + email
+                    + ", Image: " + personPhotoUrl+ "id" +id);
+
+            registerUser(id,email,id);
+
+            load();
+        } else {
+            // Signed out, show unauthenticated UI.
+           // updateUI(false);
+        }
+    }
+
+    private void load() {
+        mIntent = new Intent(LoginActivity.this, MainActivity.class);
+        mIntent.putExtra("fb","itIsG+");
+        startActivity(mIntent);
+        signOut();
+        finish();
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         callbackManager.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
+        }
     }
 
     @Override
@@ -201,6 +294,30 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+        if (opr.isDone()) {
+            // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
+            // and the GoogleSignInResult will be available instantly.
+            Log.d("G+", "Got cached sign-in");
+            GoogleSignInResult result = opr.get();
+            handleSignInResult(result);
+        } else {
+            // If the user has not previously signed in on this device or the sign-in has expired,
+            // this asynchronous branch will attempt to sign in the user silently.  Cross-device
+            // single sign-on will occur in this branch.
+            //showProgressDialog();
+            pDialog.setMessage("Login.....");
+            showDialog();
+            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                @Override
+                public void onResult(GoogleSignInResult googleSignInResult) {
+                    //hideProgressDialog();
+                    hideDialog();
+                    handleSignInResult(googleSignInResult);
+                }
+            });
+        }
+
     }
 
     private FacebookCallback<LoginResult> mCallBack = new FacebookCallback<LoginResult>() {
@@ -209,13 +326,10 @@ public class LoginActivity extends AppCompatActivity {
             hideDialog();
 
             // App code
-            GraphRequest request = GraphRequest.newMeRequest(
-                    loginResult.getAccessToken(),
+            GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(),
                     new GraphRequest.GraphJSONObjectCallback() {
                         @Override
-                        public void onCompleted(
-                                JSONObject object,
-                                GraphResponse response) {
+                        public void onCompleted(JSONObject object, GraphResponse response) {
 
                             Log.e("response: ", response + "");
                             Log.e("response object: ", object.toString() + "");
@@ -229,7 +343,7 @@ public class LoginActivity extends AppCompatActivity {
                                 user.last_name = object.getString("last_name");
                                 PrefUtils.setCurrentUser(user,LoginActivity.this);
 
-                                registerUser(user.facebookID,user.email,user.facebookID);
+                                registerUser(FbUser.facebookID, FbUser.email, FbUser.facebookID);
 
                             }catch (Exception e){
                                 e.printStackTrace();
@@ -267,7 +381,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 fb = true;
-                doLogin(user.facebookID,user.facebookID);
+                doLogin(FbUser.facebookID, FbUser.facebookID);
                 Log.d("OnResponse", "Register Response: " + response);
             }
         }, new Response.ErrorListener() {
@@ -389,5 +503,10 @@ public class LoginActivity extends AppCompatActivity {
     private void hideDialog() {
         if (pDialog.isShowing())
             pDialog.dismiss();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d("G+ Connection Failed", "onConnectionFailed:" + connectionResult);
     }
 }

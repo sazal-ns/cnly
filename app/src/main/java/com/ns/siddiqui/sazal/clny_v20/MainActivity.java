@@ -29,6 +29,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.GoogleMap;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DownLoadImageTask;
@@ -65,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
     public Context context;
 
-    private FbUser user;
     public static Bitmap bitmap;
     CircleImageView pic;
    public  Intent fbIntent;
@@ -76,8 +78,6 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
         setContentView(R.layout.activity_main);
         mHandler = new Handler();
 
-
-        user= PrefUtils.getCurrentUser(MainActivity.this);
         preInti();
 
         navLoad();
@@ -220,12 +220,14 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
             protected Void doInBackground(Void... params) {
                 URL imageURL = null;
                 try {
-                    imageURL = new URL("https://graph.facebook.com/" + user.facebookID + "/picture?type=large");
+                    imageURL = new URL("https://graph.facebook.com/" + FbUser.facebookID + "/picture?type=large");
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
                 try {
-                    bitmap  = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
+                    if (imageURL != null) {
+                        bitmap  = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
+                    }
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -268,13 +270,16 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                 nameTextView.setText(User.getUserName());
             }
         if (fbIntent.getStringExtra("fb").equals("itIs")){
-            nameTextView.setText(user.name);
+            nameTextView.setText(FbUser.name);
             loadFbData();
         }
-        else if (User.getImageLink() != "null") {
+        else if (User.getImageLink() != "null" && User.getImageLink().contains("app.clynpro")) {
                 String picUrl = "http://app.clynpro.com/image/";
                 new DownLoadImageTask(pic).execute(picUrl + User.getImageLink());
-            }
+        }else if (fbIntent.getStringExtra("fb").equals("itIsG+")){
+            nameTextView.setText(FbUser.name);
+            new DownLoadImageTask(pic).execute(User.getImageLink());
+        }
     }
 
     private void preInti() {
