@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private GoogleApiClient mGoogleApiClient;
     private SignInButton btnSignIn;
 
-    private boolean fb = false;
+    private boolean fb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +103,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             finish();
         }
 
+        fb = false;
 /*
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
@@ -207,6 +208,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     };
 
     private void signIn() {
+        fb = true;
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -221,7 +223,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-        fb = true;
         Log.d("G+", "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
@@ -408,7 +409,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     private void doLogin(final String email, final String password) {
-
+Log.e("Fb", String.valueOf(fb));
         if (!fb) {
             pDialog.setMessage("Logging in ...");
             showDialog();
@@ -441,12 +442,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             User.setFavPet(object.getString("favPet"));
                             User.setFirstName(object.getString("firstName"));
                             User.setFullAddress(object.getString("fullAddress"));
-                            User.setImageLink(object.getString("imageLink"));
                             User.setLastName(object.getString("lastName"));
                             User.setUnique_id(object.getString("u_id"));
                             User.setUpdatedOn(object.getString("updatedOn"));
 
                         if (!fb) {
+                            User.setImageLink(object.getString("imageLink"));
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.putExtra("fb", "fuck");
                             startActivity(intent);

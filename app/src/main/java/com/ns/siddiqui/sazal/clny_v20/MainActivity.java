@@ -273,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
             nameTextView.setText(FbUser.name);
             loadFbData();
         }
-        else if (User.getImageLink() != "null" && User.getImageLink().contains("app.clynpro")) {
+        else if (!User.getImageLink().contains("null") && !User.getImageLink().contains("googleusercontent")) {
                 String picUrl = "http://app.clynpro.com/image/";
                 new DownLoadImageTask(pic).execute(picUrl + User.getImageLink());
         }else if (fbIntent.getStringExtra("fb").equals("itIsG+")){
