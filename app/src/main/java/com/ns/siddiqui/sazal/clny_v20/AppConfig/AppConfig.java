@@ -19,4 +19,6 @@ public final class AppConfig {
     public static final String FILE_UPLOAD_URL = "http://app.clynpro.com/fileUpload.php";
 
     public static final String IMAGE_DIRECTORY_NAME = "CLYN";
+
+    public static final String MARKER_URL = "http://app.clynpro.com/clyn.php";
 }

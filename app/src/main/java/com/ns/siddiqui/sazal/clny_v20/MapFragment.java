@@ -4,10 +4,14 @@
 
 package com.ns.siddiqui.sazal.clny_v20;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +19,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,7 +33,18 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppConfig;
+import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.GPSTracker;
+import com.ns.siddiqui.sazal.clny_v20.model.User;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -83,8 +104,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-     // Inflate the layout for this fragment
-        View view= inflater.inflate(R.layout.fragment_map, container, false);
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_map, container, false);
 
         SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager()
                 .findFragmentById(R.id.map);
@@ -130,79 +151,75 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         gpsTracker = new GPSTracker(getContext());
         mMap = googleMap;
-        Log.d("****Lat***", String.valueOf(gpsTracker.getLat()));
-        Log.d("****Lon***", String.valueOf(gpsTracker.getLon()));
+        DecimalFormat format = new DecimalFormat("####.000000");
+        final String lat = format.format(gpsTracker.getLat());
+        final String lng = format.format(gpsTracker.getLon());
+        Log.d("****Lat***", lat);
+        Log.d("****Lon***", lng);
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setRotateGesturesEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.getUiSettings().setRotateGesturesEnabled(true);
         mMap.getUiSettings().setZoomGesturesEnabled(true);
+
         /*LatLng sydney = new LatLng(gpsTracker.getLat(), gpsTracker.getLon());
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Bangladesh"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
         //mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
 
-        for (int i = 0; i < 10; i++) {
-            // random latitude and logitude
-            double[] randomLocation = createRandLocation(gpsTracker.getLat(),
-                    gpsTracker.getLon());
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(gpsTracker.getLat(),
+                        gpsTracker.getLon())).zoom(17).build();
 
-            // Adding a marker
-            MarkerOptions marker = new MarkerOptions().position(
-                    new LatLng(randomLocation[0], randomLocation[1]))
-                    .title("Hello Maps " + i);
+        mMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosition));
 
-            Log.e("Random", "> " + randomLocation[0] + ", "
-                    + randomLocation[1]);
+        StringRequest request = new StringRequest(Request.Method.POST, AppConfig.MARKER_URL, new Response.Listener<String>() {
 
-            // changing marker color
-            if (i == 0)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-            if (i == 1)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-            if (i == 2)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-            if (i == 3)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-            if (i == 4)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-            if (i == 5)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-            if (i == 6)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_RED));
-            if (i == 7)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-            if (i == 8)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
-            if (i == 9)
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+            @Override
+            public void onResponse(String response) {
+                Log.d("Map Response: ",  response);
 
-            mMap.addMarker(marker);
-
-            // Move the camera to last position with a zoom level
-            if (i == 9) {
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(gpsTracker.getLat(),
-                                gpsTracker.getLon())).zoom(17).build();
-
-
-                mMap.animateCamera(CameraUpdateFactory
-                        .newCameraPosition(cameraPosition));
             }
-        }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("chekc login", "Login Error: " + error.getMessage());
+
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<>();
+                params.put("lat", lat);
+                params.put("lng", lng);
+                params.put("radius","25");
+
+                return params;
+            }
+        };
+
+        // Adding request to request queue
+       /* AppController.getInstance().addToRequestQueue(strReq, tag_string_req);*/
+        Volley.newRequestQueue(getContext()).add(request);
+
     }
 
     /**

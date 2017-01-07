@@ -349,6 +349,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             }catch (Exception e){
                                 e.printStackTrace();
                             }
+                            User.setImageLink("null");
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.putExtra("fb","itIs");
                             startActivity(intent);

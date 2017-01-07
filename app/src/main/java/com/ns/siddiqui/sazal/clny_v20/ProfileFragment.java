@@ -253,10 +253,11 @@ public class ProfileFragment extends Fragment {
             nameTextView.setText(FbUser.name);
             firstNameEditText.setText(FbUser.first_name);
             lastNameEditText.setText(FbUser.last_name);
-            if (User.getImageLink().contains("googleusercontent")) {
+            proPic.setImageBitmap(MainActivity.bitmap);
+            if (User.getImageLink()!= "null") {
                 Log.d("g+","pic");
                 proPic.setImageBitmap(DownLoadImageTask.getLogo());
-            }else proPic.setImageBitmap(MainActivity.bitmap);
+            }
         }else {
             if (!User.getImageLink().contains("null")) {
                 proPic.setImageBitmap(DownLoadImageTask.getLogo());
