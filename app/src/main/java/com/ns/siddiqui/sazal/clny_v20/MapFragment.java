@@ -44,6 +44,7 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 
@@ -192,7 +193,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             @Override
             public void onResponse(String response) {
-                Log.d("Map Response: ",  response);
+                JSONObject jsonObject;
+                try {
+                    jsonObject = new JSONObject(response);
+                    Log.e("Map", jsonObject.toString());
+                    Iterator keys  = jsonObject.keys();
+                    while (keys.hasNext()) {
+                        String dynamicKey = (String) keys.next();
+                        Log.e("key",dynamicKey);
+                        if (!dynamicKey.contains("error")) {
+                            JSONObject object = jsonObject.getJSONObject(dynamicKey);
+                            Log.e("Map object", object.toString());
+                            MarkerOptions marker = new MarkerOptions().position(new LatLng(object.getDouble("lat"), object.getDouble("lng")))
+                                    .title(object.getString("name")+"\n"+"\nDistance:"+object.getString("distance"));
+
+                            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+                            mMap.addMarker(marker);
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
 
             }
         }, new Response.ErrorListener() {

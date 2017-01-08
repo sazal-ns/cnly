@@ -27,7 +27,6 @@ public class SupporMainActivity extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_suppor_main);
 
-
         about = (Button) findViewById(R.id.aboutButton);
         mExpandLayout = (ExpandableWeightLayout) findViewById(R.id.expandableLayout);
         about.setOnClickListener(this);
@@ -36,6 +35,7 @@ public class SupporMainActivity extends AppCompatActivity implements View.OnClic
         expandableWeightLayoutLeagal = (ExpandableWeightLayout) findViewById(R.id.expandableLayoutLegal);
         legal.setOnClickListener(this);
     }
+
 
     @Override
     public void onClick(View v) {

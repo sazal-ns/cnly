@@ -143,7 +143,8 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                         CURRENT_TAG = TAG_SETTINGS;
                         break;
                     case R.id.nav_support:
-                        startActivity(new Intent(MainActivity.this, SupporMainActivity.class));
+                        Intent intent = new Intent(MainActivity.this, SupporMainActivity.class);
+                        startActivity(intent);
                         drawer.closeDrawers();
                         return true;
                     default:
