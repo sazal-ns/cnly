@@ -54,6 +54,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.ui.IconGenerator;
 import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppConfig;
 import com.ns.siddiqui.sazal.clny_v20.AppConfig.Constants;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
@@ -68,15 +69,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MapFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MapFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener, LocationListener, ResultCallback<LocationSettingsResult> {
     // TODO: Rename parameter arguments, choose names that match
@@ -87,6 +79,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private Button fabButton;
 
     private OnFragmentInteractionListener mListener;
 
@@ -100,7 +94,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     protected String mLastUpdateTime;
     protected boolean mAddressRequested;
     protected String mAddressOutput;
-    private AddressResultReceiver mResultReceiver;
+    // private AddressResultReceiver mResultReceiver;
+
+    private Location tempLocation;
+    private IconGenerator iconGenerator;
 
     protected static final String TAG = "MapFragment";
     public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
@@ -142,8 +139,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        // 2
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -153,36 +149,53 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        // 3
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         format = new DecimalFormat("####.000000");
 
-        mResultReceiver = new AddressResultReceiver(new Handler());
+        tempLocation = new Location("");
+        tempLocation.setLatitude(0.00);
+        tempLocation.setLongitude(0.00);
 
+
+        // mResultReceiver = new AddressResultReceiver(new Handler());
+        iconGenerator = new IconGenerator(getContext());
 
         SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
         mRequestingLocationUpdates = false;
         mLastUpdateTime = "";
 
         // Set defaults, then update using values stored in the Bundle.
-        mAddressRequested = false;
-        mAddressOutput = "";
+        /*mAddressRequested = true;
+        mAddressOutput = "";*/
 
         updateValuesFromBundle(savedInstanceState);
         buildGoogleApiClient();
-        buildLocationSettingsRequest();
-        checkLocationSettings();
         createLocationRequest();
-        fetchAddressButtonHandler();
+        buildLocationSettingsRequest();
+        // checkLocationSettings();
 
-        Button fab = (Button) view.findViewById(R.id.fabButton);
-        fab.setOnClickListener(new View.OnClickListener() {
+
+        fabButton = (Button) view.findViewById(R.id.fabButton);
+        fabButton.setEnabled(false);
+        fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
+                /*double dis = calculateDistance(tempLocation.getLatitude(), tempLocation.getLongitude(), location.getLatitude(),location.getLongitude());
+                if (dis > 25.0){
+                    Log.wtf(TAG, String.valueOf(dis));
+                    tempLocation = location;
+                    ClynfromDB(location.getLatitude(), location.getLongitude());
+                }*/
+                ClynfromDB(location.getLatitude(), location.getLongitude());
+
+
             }
         });
 
@@ -190,28 +203,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     }
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
-        Log.i(TAG, "Updating values from bundle");
+        // 4
         if (savedInstanceState != null) {
-            Log.e(TAG, "Updating values from inside bundle");
+            Log.i(TAG, "Updating values from inside bundle");
             // Update the value of mRequestingLocationUpdates from the Bundle, and make sure that
             // the Start Updates and Stop Updates buttons are correctly enabled or disabled.
-            if (savedInstanceState.keySet().contains(REQUESTING_LOCATION_UPDATES_KEY)) {
+            if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)) {
                 mRequestingLocationUpdates = savedInstanceState.getBoolean(
-                        REQUESTING_LOCATION_UPDATES_KEY);
-                //setButtonsEnabledState();
+                        KEY_REQUESTING_LOCATION_UPDATES);
             }
 
             // Update the value of mCurrentLocation from the Bundle and update the UI to show the
             // correct latitude and longitude.
-            if (savedInstanceState.keySet().contains(LOCATION_KEY)) {
-                // Since LOCATION_KEY was found in the Bundle, we can be sure that mCurrentLocation
+            if (savedInstanceState.keySet().contains(KEY_LOCATION)) {
+                // Since KEY_LOCATION was found in the Bundle, we can be sure that mCurrentLocation
                 // is not null.
-                location = savedInstanceState.getParcelable(LOCATION_KEY);
-            }
-
-            // Update the value of mLastUpdateTime from the Bundle and update the UI.
-            if (savedInstanceState.keySet().contains(LAST_UPDATED_TIME_STRING_KEY)) {
-                mLastUpdateTime = savedInstanceState.getString(LAST_UPDATED_TIME_STRING_KEY);
+                location = savedInstanceState.getParcelable(KEY_LOCATION);
             }
 
             // Update the value of mLastUpdateTime from the Bundle and update the UI.
@@ -219,8 +226,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                 mLastUpdateTime = savedInstanceState.getString(KEY_LAST_UPDATED_TIME_STRING);
             }
             //updateUI();
+            moveMap();
 
-            if (savedInstanceState.keySet().contains(ADDRESS_REQUESTED_KEY)) {
+            /*if (savedInstanceState.keySet().contains(ADDRESS_REQUESTED_KEY)) {
                 mAddressRequested = savedInstanceState.getBoolean(ADDRESS_REQUESTED_KEY);
             }
             // Check savedInstanceState to see if the location address string was previously found
@@ -228,15 +236,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
             if (savedInstanceState.keySet().contains(LOCATION_ADDRESS_KEY)) {
                 mAddressOutput = savedInstanceState.getString(LOCATION_ADDRESS_KEY);
                 //displayAddressOutput();
-                Log.e(TAG,mAddressOutput);
+                Log.e(TAG,mAddressOutput +"inside bundale update");
                 new DialogShow(getContext(),"Address",mAddressOutput,null);
                 //Toast.makeText(getContext(),mAddressOutput,Toast.LENGTH_LONG).show();
-            }else  Log.e(TAG,mAddressOutput);
-            moveMap();
+
+            }*/
+
         }
     }
 
-    protected void startIntentService() {
+   /* protected void startIntentService() {
+        Log.e("Find", "startIntentService");
         // Create an intent for passing to the intent service responsible for fetching the address.
         Intent intent = new Intent(getContext(), FetchAddressIntentService.class);
 
@@ -250,9 +260,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         // (creating a process for it if needed); if it is running then it remains running. The
         // service kills itself automatically once all intents are processed.
         getActivity().startService(intent);
-    }
+    }*/
 
-    public void fetchAddressButtonHandler() {
+    /*public void fetchAddressButtonHandler() {
+        Log.e("Find", "fetchAddressButtonHandler");
         Log.i(TAG, "fetchAddressButtonHandler");
         // We only start the service to fetch the address if GoogleApiClient is connected.
         if (googleApiClient.isConnected() && location != null) {
@@ -265,10 +276,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         // immediately kicks off the process of getting the address.
         mAddressRequested = true;
         //updateUIWidgets();
-    }
+    }*/
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
+        Log.e("Find", "onButtonPressed");
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
@@ -276,17 +288,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     @Override
     public void onAttach(Context context) {
+        // 1
         super.onAttach(context);
-        /*if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
     }
 
     @Override
     public void onDetach() {
+        Log.e("Find", "onDetach");
+
         Log.d("Call", "onDetach");
         googleApiClient.disconnect();
         super.onDetach();
@@ -295,6 +304,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        //12
+
         mMap = googleMap;
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
@@ -318,9 +329,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.style_json));
 
+        //iconGenerator.setColor(R.color.appCOlor);
+        // iconGenerator.setStyle(IconGenerator.STYLE_GREEN);
+        checkLocationSettings();
     }
 
+    private void addIcon(IconGenerator iconFactory, CharSequence text, LatLng position) {
+        Log.e("Find", "addIcon");
+
+        MarkerOptions markerOptions = new MarkerOptions().
+                icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text))).
+                position(position).
+                anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+        mMap.addMarker(markerOptions);
+    }
+
+
     private void ClynfromDB(final double lat, final double lng) {
+        Log.e("Find", "ClynfromDB");
+
         StringRequest request = new StringRequest(Request.Method.POST, AppConfig.MARKER_URL, new Response.Listener<String>() {
 
             @Override
@@ -332,16 +359,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                     Iterator keys = jsonObject.keys();
                     while (keys.hasNext()) {
                         String dynamicKey = (String) keys.next();
-                       // Log.e("key", dynamicKey);
+                        // Log.e("key", dynamicKey);
                         if (!dynamicKey.contains("error")) {
                             JSONObject object = jsonObject.getJSONObject(dynamicKey);
-                           // Log.e("Map object", object.toString());
+                            Log.e("Map object", object.toString());
                             MarkerOptions marker = new MarkerOptions().position(new LatLng(object.getDouble("lat"), object.getDouble("lng")))
-                                    .title(object.getString("name") + "\n" + "\nDistance:" + object.getString("distance"));
+                                    .title("$" + object.getString("prize"));
 
                             marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
                             mMap.addMarker(marker);
+                            // addIcon(iconGenerator,"$"+object.getString("prize"), new LatLng(object.getDouble("lat"), object.getDouble("lng")) );
+
                         }
                     }
 
@@ -368,8 +397,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                 params.put("lat", format.format(lat));
                 params.put("lng", format.format(lng));
                 params.put("radius", "25");
+                // params.put("locality", mAddressOutput.toLowerCase());
                 Log.d("Sent to DB latitude", String.valueOf(lat));
                 Log.d("Sent to DB longitude", String.valueOf(lng));
+                // Log.d("Sent to DB locality", mAddressOutput.toLowerCase());
 
                 return params;
             }
@@ -381,6 +412,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     }
 
     private void moveMap() {
+        Log.e("Find", "moveMap");
+
         /**
          * Creating the latlng object to store lat, long coordinates
          * adding marker to map
@@ -392,13 +425,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         //new DialogShow(getContext(), "Lacation", latLng.toString(), null);
+        fabButton.setEnabled(true);
+    }
 
+    public static double calculateDistance(double startLatitude, double startLongitude, double endLatitude, double endLongitude) {
+        Log.e("Find", "calculateDistance");
 
-       // ClynfromDB(location.getLatitude(), location.getLongitude());
-
+        float[] results = new float[3];
+        Location.distanceBetween(startLatitude, startLongitude, endLatitude, endLongitude, results);
+        return results[0];
     }
 
     protected synchronized void buildGoogleApiClient() {
+        // 5
+
         Log.i(TAG, "Building GoogleApiClient");
         googleApiClient = new GoogleApiClient.Builder(getContext())
                 .addConnectionCallbacks(this)
@@ -409,28 +449,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     }
 
     protected void createLocationRequest() {
+        // 6 9
         mLocationRequest = new LocationRequest();
 
-        // Sets the desired interval for active location updates. This interval is
-        // inexact. You may not receive updates at all if no location sources are available, or
-        // you may receive them slower than requested. You may also receive updates faster than
-        // requested if other applications are requesting location at a faster interval.
         mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
-
-        // Sets the fastest rate for active location updates. This interval is exact, and your
-        // application will never receive updates faster than this value.
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
-
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     protected void buildLocationSettingsRequest() {
+        // 7
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(mLocationRequest);
         mLocationSettingsRequest = builder.build();
     }
 
     protected void checkLocationSettings() {
+        //8
         PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient,
                 mLocationSettingsRequest);
         result.setResultCallback(this);
@@ -438,9 +473,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        //13
+
         Log.i(TAG, "Connected to GoogleApiClient");
         if (location == null) {
-            Log.i(TAG, "location == null");
+            //fetchAddressButtonHandler();
             if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -450,42 +487,48 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                 //                                          int[] grantResults)
                 // to handle the case where the user grants the permission. See the documentation
                 // for ActivityCompat#requestPermissions for more details.
-                return;
+                Log.i(TAG, "GoogleApiClientgjhgjhftytyyt");
+
+
+              /*  if (!Geocoder.isPresent()) {
+                    Log.e(TAG, "no_geocoder_available");
+                    Toast.makeText(getContext(), "no_geocoder_available", Toast.LENGTH_LONG).show();
+                }else  startIntentService();*/
             }
             location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
             mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-
-            //updateUI();
             moveMap();
+           /* //updateUI();
+            if (location != null) {
+                Log.e(TAG, "Connected to GoogleApiClient mAddressRequested");
+                // Determine whether a Geocoder is available.
+
+                // It is possible that the user presses the button to get the address before the
+                // GoogleApiClient object successfully connects. In such a case, mAddressRequested
+                // is set to true, but no attempt is made to fetch the address (see
+                // fetchAddressButtonHandler()) . Instead, we start the intent service here if the
+                // user has requested an address, since we now have a connection to GoogleApiClient.
+                if (mAddressRequested) {
+
+                }
+                //moveMap();
+            }*/
+
         }
 
-        if (location != null) {
-            Log.e(TAG, "Connected to GoogleApiClient mAddressRequested");
-            // Determine whether a Geocoder is available.
-            if (!Geocoder.isPresent()) {
-                Toast.makeText(getContext(), "no_geocoder_available", Toast.LENGTH_LONG).show();
-                return;
-            }
-            // It is possible that the user presses the button to get the address before the
-            // GoogleApiClient object successfully connects. In such a case, mAddressRequested
-            // is set to true, but no attempt is made to fetch the address (see
-            // fetchAddressButtonHandler()) . Instead, we start the intent service here if the
-            // user has requested an address, since we now have a connection to GoogleApiClient.
-            if (mAddressRequested) {
-                startIntentService();
-            }
-        }
 
         // If the user presses the Start Updates button before GoogleApiClient connects, we set
         // mRequestingLocationUpdates to true (see startUpdatesButtonHandler()). Here, we check
         // the value of mRequestingLocationUpdates and if it is true, we start location updates.
-        if (mRequestingLocationUpdates) {
+        /*if (mRequestingLocationUpdates) {
             startLocationUpdates();
-        }
+        }*/
     }
 
     @Override
     public void onConnectionSuspended(int i) {
+        Log.e("Find", "onConnectionSuspended");
+
         Log.i(TAG, "Connection suspended");
         googleApiClient.connect();
     }
@@ -503,15 +546,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     @Override
     public void onLocationChanged(Location location) {
+        Log.e("Find", "onLocationChanged");
+
         //getCurrentLocation();
         this.location = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         //updateUI();
+        /*if (!mAddressOutput.equals(""))*/
         moveMap();
         Toast.makeText(getContext(), "Location updated", Toast.LENGTH_SHORT).show();
     }
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.e("Find", "onSaveInstanceState");
+
         savedInstanceState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(LOCATION_KEY, location);
         savedInstanceState.putString(LAST_UPDATED_TIME_STRING_KEY, mLastUpdateTime);
@@ -526,6 +574,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     @Override
     public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+        // 15
 
         final Status status = locationSettingsResult.getStatus();
         switch (status.getStatusCode()) {
@@ -555,6 +604,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("Find", "onActivityResult");
+
         switch (requestCode) {
             // Check for the integer request code originally supplied to startResolutionForResult().
             case REQUEST_CHECK_SETTINGS:
@@ -587,27 +638,31 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     }
 
     protected void stopLocationUpdates() {
+        Log.e("Find", "stopLocationUpdates");
+
         // It is a good practice to remove location requests when the activity is in a paused or
         // stopped state. Doing so helps battery performance and is especially
         // recommended in applications that request frequent location updates.
 
         // The final argument to {@code requestLocationUpdates()} is a LocationListener
         // (http://developer.android.com/reference/com/google/android/gms/location/LocationListener.html).
-       // LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+        // LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(Status status) {
                 mRequestingLocationUpdates = false;
-               // setButtonsEnabledState();
+                // setButtonsEnabledState();
             }
         });
     }
 
     protected void startLocationUpdates() {
-        // The final argument to {@code requestLocationUpdates()} is a LocationListener
-        // (http://developer.android.com/reference/com/google/android/gms/location/LocationListener.html).
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        Log.e("Find", "startLocationUpdates");
+
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -617,20 +672,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        //LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest,
-                this).setResultCallback(new ResultCallback<Status>() {
+                this
+        ).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(Status status) {
                 mRequestingLocationUpdates = true;
-               // setButtonsEnabledState();
-                moveMap();
+                //setButtonsEnabledState();
             }
         });
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        //10
         Log.d("Call", "onViewCreated");
         googleApiClient.connect();
         super.onViewCreated(view, savedInstanceState);
@@ -638,6 +693,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     @Override
     public void onResume() {
+        // 11
         super.onResume();
         if (googleApiClient.isConnected() && mRequestingLocationUpdates) {
             startLocationUpdates();
@@ -646,6 +702,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     @Override
     public void onPause() {
+        Log.e("Find", "onPause");
+
         super.onPause();
 
         if (googleApiClient.isConnected()) {
@@ -655,33 +713,34 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     @Override
     public void onStop() {
+        Log.e("Find", "onStop");
+
         if (googleApiClient.isConnected()) {
             googleApiClient.disconnect();
         }
         super.onStop();
     }
 
-    class AddressResultReceiver extends ResultReceiver {
+    /*class AddressResultReceiver extends ResultReceiver {
+
         AddressResultReceiver(Handler handler) {
+
             super(handler);
         }
 
-
-        /**
-         *  Receives data sent from FetchAddressIntentService and updates the UI in MainActivity.
-         */
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
+            Log.e("Find", "onReceiveResult");
 
             // Display the address string or an error message sent from the intent service.
             mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            Log.e(TAG,mAddressOutput);
-            new DialogShow(getContext(),"Address",mAddressOutput,null);
+            moveMap();
+           // new DialogShow(getContext(),"Address",mAddressOutput,null);
             //Toast.makeText(getContext(),mAddressOutput,Toast.LENGTH_LONG).show();
-
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
                 Log.e(TAG,"address_found");
+
                 //Toast.makeText(getContext(),"address_found",Toast.LENGTH_LONG).show();
             }
 
@@ -689,6 +748,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
             mAddressRequested = false;
            // updateUIWidgets();
         }
-    }
+    }*/
 }
 

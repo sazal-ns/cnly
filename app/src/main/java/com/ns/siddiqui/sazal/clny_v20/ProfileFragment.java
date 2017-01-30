@@ -247,17 +247,16 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadData() {
-        if(PrefUtils.getCurrentUser(getContext()) != null) {
+        if(User.getLoginType()!=0) {
 
             uploadImageButton.setVisibility(View.GONE);
             nameTextView.setText(FbUser.name);
             firstNameEditText.setText(FbUser.first_name);
             lastNameEditText.setText(FbUser.last_name);
-            proPic.setImageBitmap(MainActivity.bitmap);
-            if (User.getImageLink()!= "null") {
+            if (User.getLoginType()==2) {
                 Log.d("g+","pic");
                 proPic.setImageBitmap(DownLoadImageTask.getLogo());
-            }
+            }else proPic.setImageBitmap(MainActivity.bitmap);
         }else {
             if (!User.getImageLink().contains("null")) {
                 proPic.setImageBitmap(DownLoadImageTask.getLogo());

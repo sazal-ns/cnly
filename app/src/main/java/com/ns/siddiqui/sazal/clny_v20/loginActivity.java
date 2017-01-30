@@ -98,7 +98,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         if(PrefUtils.getCurrentUser(LoginActivity.this) != null){
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.putExtra("fb","itIs");
+            //intent.putExtra("fb","itIs");
+            User.setLoginType(1);
             startActivity(intent);
             finish();
         }
@@ -126,7 +127,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
 
         // SQLite database handler
-        db = new SQLiteHandler(getApplicationContext());
+        //db = new SQLiteHandler(getApplicationContext());
 
         // Session manager
         session = new SessionManager(getApplicationContext());
@@ -135,7 +136,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         if (session.isLoggedIn()) {
             // User is already logged in. Take him to main activity
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.putExtra("fb","fuck");
+            //intent.putExtra("fb","fuck");
+            User.setLoginType(0);
             startActivity(intent);
             finish();
         }
@@ -257,7 +259,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private void load() {
         mIntent = new Intent(LoginActivity.this, MainActivity.class);
-        mIntent.putExtra("fb","itIsG+");
+       // mIntent.putExtra("fb","itIsG+");
+        User.setLoginType(2);
         startActivity(mIntent);
         signOut();
         finish();
@@ -343,7 +346,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                 user.first_name = object.getString("first_name");
                                 user.last_name = object.getString("last_name");
                                 PrefUtils.setCurrentUser(user,LoginActivity.this);
-
+                                User.setLoginType(1);
                                 registerUser(FbUser.facebookID, FbUser.email, FbUser.facebookID);
 
                             }catch (Exception e){
@@ -351,7 +354,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             }
                             User.setImageLink("null");
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.putExtra("fb","itIs");
+                            //intent.putExtra("fb","itIs");
                             startActivity(intent);
                             finish();
                         }
@@ -450,7 +453,8 @@ Log.e("Fb", String.valueOf(fb));
                         if (!fb) {
                             User.setImageLink(object.getString("imageLink"));
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.putExtra("fb", "fuck");
+                            //intent.putExtra("fb", "fuck");
+                            User.setLoginType(0);
                             startActivity(intent);
                             finish();
                         }

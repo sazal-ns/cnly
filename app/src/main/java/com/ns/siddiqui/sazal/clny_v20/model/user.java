@@ -12,6 +12,15 @@ import java.io.Serializable;
 
 public class User implements Serializable {
     private static String id,userName,unique_id,emailAddress,createdOn,updatedOn,FirstName,LastName,FullAddress,bio,FavPet,FavMusic,ImageLink;
+    private static  int loginType;
+
+    public static int getLoginType() {
+        return loginType;
+    }
+
+    public static void setLoginType(int loginType) {
+        User.loginType = loginType;
+    }
 
     public static String getId() {
         return id;

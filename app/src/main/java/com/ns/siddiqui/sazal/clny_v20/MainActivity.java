@@ -270,21 +270,21 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
             } else {
                 nameTextView.setText(User.getUserName());
             }
-        if (fbIntent.getStringExtra("fb").equals("itIs")){
+        if (User.getLoginType()==1){
             nameTextView.setText(FbUser.name);
             loadFbData();
         }
         else if (!User.getImageLink().contains("null") && !User.getImageLink().contains("googleusercontent")) {
                 String picUrl = "http://app.clynpro.com/image/";
                 new DownLoadImageTask(pic).execute(picUrl + User.getImageLink());
-        }else if (fbIntent.getStringExtra("fb").equals("itIsG+")){
+        }else if (User.getLoginType()==2){
             nameTextView.setText(FbUser.name);
             new DownLoadImageTask(pic).execute(User.getImageLink());
         }
     }
 
     private void preInti() {
-        fbIntent = getIntent();
+       // fbIntent = getIntent();
 
     }
 

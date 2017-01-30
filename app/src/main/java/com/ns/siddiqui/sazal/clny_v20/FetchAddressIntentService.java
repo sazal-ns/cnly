@@ -40,7 +40,6 @@ public class FetchAddressIntentService extends IntentService {
     public FetchAddressIntentService() {
         // Use the TAG to name the worker thread.
         super(TAG);
-        Log.wtf(TAG, "FetchAddressIntentService");
     }
 
     @Override
