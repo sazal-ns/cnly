@@ -27,6 +27,26 @@
             android:id="@+id/nav_clean"
             android:icon="@drawable/ic_brush_black_24dp"
             android:title="Clean" />
+        <item
+            android:id="@+id/nav_fqs"
+            android:icon="@drawable/ic_help_black_24dp"
+            android:title="FAQ'S" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_info_black_24dp"
+            android:title="About CLYN" />
+        <item
+            android:id="@+id/nav_support"
+            android:icon="@drawable/ic_headset_mic_black_24dp"
+            android:title="SUPPORT CENTER" />
+        <item
+            android:id="@+id/nav_intern"
+            android:icon="@drawable/ic_wc_black_24dp"
+            android:title="Intern Opportunities" />
+        <item
+            android:id="@+id/nav_Legal"
+            android:icon="@drawable/ic_verified_user_black_24dp"
+            android:title="Legal" />
     </group>
 
 </menu>

@@ -1,0 +1,142 @@
+<!--
+  ~ Copyright (c) 2017. By Noor Nabiul Alam Siddiqui
+  -->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ns.siddiqui.sazal.clny_v20.AboutFragment"
+    android:background="@drawable/bg">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/background"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/rectangle_11"
+                android:id="@+id/imageView4" />
+
+            <TextView
+                android:text="   About Clyn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView2"
+                android:textStyle="bold"
+                android:textSize="20sp"/>
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:background="@android:color/white">
+
+
+                <TextView
+                    android:text="Who we are"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView1"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="10dp"
+                    android:textSize="20sp"
+                    android:textColor="@color/background"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Best app in the market Request for cleaners, handymen,
+    landscapers and more by a click of a button. Clyn is registered in USA, Kenya and Nigeria. Our work is patented and protected under the Clyn LLC. "
+                    android:paddingLeft="20dp"
+                    android:paddingTop="10dp"
+                    android:id="@+id/textView3"/>
+
+                <TextView
+                    android:text="Safety"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView4"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="10dp"
+                    android:textSize="20sp"
+                    android:textColor="@color/background"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Please be advised to stay safe while travelling, and during your working schedule. Please keep your data on while working at all times to help us tract you in case of an emergency."
+                    android:paddingLeft="20dp"
+                    android:paddingTop="10dp"
+                    android:id="@+id/textView5"/>
+
+                <TextView
+                    android:text="Careers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView6"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="10dp"
+                    android:textSize="20sp"
+                    android:textColor="@color/background"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Take your ideas to the next level and make something that people use every day. Something that changes the physical world—and does it fast. We still have a long way to go. Hop in and help us get there. Contact our office to be part of our team."
+                    android:paddingLeft="20dp"
+                    android:paddingTop="10dp"
+                    android:id="@+id/textView7"/>
+
+                <TextView
+                    android:text="Useful links"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView8"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="10dp"
+                    android:textSize="20sp"
+                    android:textColor="@color/background"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Press \nJobs \nBlog \nLyft for Good \nPartnerships \nDevelopers\n\n"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="10dp"
+                    android:id="@+id/textView9"/>
+
+            </LinearLayout>
+        </ScrollView>
+
+
+    </LinearLayout>
+
+
+</FrameLayout>

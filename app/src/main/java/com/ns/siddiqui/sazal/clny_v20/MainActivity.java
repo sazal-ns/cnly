@@ -56,7 +56,11 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
     private static final String TAG_PAYMENT = "Payment";
     private static final String TAG_SETTINGS = "Settings";
     private static final String TAG_CLEAN = "Clean";
-    private static final String TAG_SUPPORT = "Support";
+    private static final String TAG_FAQS = "FAQ";
+    private static final String TAG_LEGAL = "legal";
+    private static final String TAG_ABOUT = "About Clyn";
+    private static final String TAG_INTERN = "Intern Opportunities";
+    private static final String TAG_SUPPORT = "Support Center";
     public static String CURRENT_TAG = TAG_HOME;
 
     private boolean shouldLoadHomeFragOnBackPress = true;
@@ -109,22 +113,52 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                         CURRENT_TAG = TAG_FREE;
                         break;
                     case R.id.nav_calender:
-                        if (CURRENT_TAG.equals(TAG_FREE))
-                            new DialogShow(MainActivity.this,"Where am I?","You are at Free Clyn",getResources().getDrawable(R.drawable.ic_insert_invitation_black_24dp));
+                        if (CURRENT_TAG.equals(TAG_CALENDER))
+                            new DialogShow(MainActivity.this,"Where am I?","You are at Calendar",getResources().getDrawable(R.drawable.ic_insert_invitation_black_24dp));
                         navItemIndex = 2;
                         CURRENT_TAG = TAG_CALENDER;
                         break;
                     case R.id.nav_payments:
-                        if (CURRENT_TAG.equals(TAG_FREE))
-                            new DialogShow(MainActivity.this,"Where am I?","You are at Free Clyn",getResources().getDrawable(R.drawable.ic_credit_card_black_24dp));
+                        if (CURRENT_TAG.equals(TAG_PAYMENT))
+                            new DialogShow(MainActivity.this,"Where am I?","You are at Payments",getResources().getDrawable(R.drawable.ic_credit_card_black_24dp));
                         navItemIndex = 3;
                         CURRENT_TAG = TAG_PAYMENT;
                         break;
                     case R.id.nav_clean:
-                        if (CURRENT_TAG.equals(TAG_FREE))
-                            new DialogShow(MainActivity.this,"Where am I?","You are at Free Clyn",getResources().getDrawable(R.drawable.ic_brush_black_24dp));
+                        if (CURRENT_TAG.equals(TAG_CLEAN))
+                            new DialogShow(MainActivity.this,"Where am I?","You are at Clean",getResources().getDrawable(R.drawable.ic_brush_black_24dp));
                         navItemIndex = 4;
                         CURRENT_TAG = TAG_CLEAN;
+                        break;
+                    case R.id.nav_fqs:
+                        if (CURRENT_TAG.equals(TAG_FAQS))
+                            new DialogShow(MainActivity.this,"Where am I?","You are at FAQ'S",getResources().getDrawable(R.drawable.ic_help_black_24dp));
+                        navItemIndex = 5;
+                        CURRENT_TAG = TAG_FAQS;
+                        break;
+                    case R.id.nav_about:
+                        if (CURRENT_TAG.equals(TAG_ABOUT))
+                            new DialogShow(MainActivity.this,"Where am I?","You are at Clean",getResources().getDrawable(R.drawable.ic_info_black_24dp));
+                        navItemIndex = 6;
+                        CURRENT_TAG = TAG_ABOUT;
+                        break;
+                    case R.id.nav_support:
+                        if (CURRENT_TAG.equals(TAG_SUPPORT))
+                            new DialogShow(MainActivity.this,"Where am I?","You are at Support Center",getResources().getDrawable(R.drawable.ic_headset_mic_black_24dp));
+                        navItemIndex = 7;
+                        CURRENT_TAG = TAG_SUPPORT;
+                        break;
+                    case R.id.nav_intern:
+                        if (CURRENT_TAG.equals(TAG_INTERN))
+                            new DialogShow(MainActivity.this,"Where am I?","You are at Intern Opportunities",getResources().getDrawable(R.drawable.ic_wc_black_24dp));
+                        navItemIndex = 8;
+                        CURRENT_TAG = TAG_INTERN;
+                        break;
+                    case R.id.nav_Legal:
+                        if (CURRENT_TAG.equals(TAG_LEGAL))
+                            new DialogShow(MainActivity.this,"Where am I?","You are at Legal",getResources().getDrawable(R.drawable.ic_verified_user_black_24dp));
+                        navItemIndex = 9;
+                        CURRENT_TAG = TAG_LEGAL;
                         break;
                     default:
                         navItemIndex =0;
@@ -139,14 +173,9 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.nav_settings:
-                        navItemIndex = 5;
+                        navItemIndex = 11;
                         CURRENT_TAG = TAG_SETTINGS;
                         break;
-                    case R.id.nav_support:
-                        Intent intent = new Intent(MainActivity.this, SupporMainActivity.class);
-                        startActivity(intent);
-                        drawer.closeDrawers();
-                        return true;
                     default:
                         navItemIndex = 0;
                 }
@@ -208,6 +237,12 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
     private Fragment getHomeFragment() {
         switch (navItemIndex) {
+            case 2:
+                return new CalendarFragment();
+            case 6:
+                return new AboutFragment();
+            case 8:
+                return new InternFragment();
             case 10:
                 return new ProfileFragment();
             default:
@@ -334,14 +369,14 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
     }
 
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -354,7 +389,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @Override
     public void onClick(View v) {

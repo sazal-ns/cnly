@@ -21,4 +21,9 @@ public final class AppConfig {
     public static final String IMAGE_DIRECTORY_NAME = "CLYN";
 
     public static final String MARKER_URL = "http://app.clynpro.com/clyn.php";
+
+    public static final String ADD_EVENT_URL = "http://app.clynpro.com/event.php";
+
+    public static final String SHOW_EVENT_URL = "http://app.clynpro.com/showEvent.php";
+
 }

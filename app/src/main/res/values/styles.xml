@@ -12,4 +12,51 @@
 
     <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <!-- Dark theme. -->
+    <style name="CaldroidDefaultDark" parent="CaldroidDefault">
+        <item name="styleCaldroidViewLayout">@style/CaldroidDefaultDarkCalendarViewLayout</item>
+        <item name="styleCaldroidMonthName">@style/CaldroidDefaultDarkMonthName</item>
+        <item name="styleCaldroidNormalCell">@style/CaldroidDefaultDarkNormalCell</item>
+        <item name="styleCaldroidSquareCell">@style/CaldroidDefaultDarkSquareCell</item>
+        <item name="styleCaldroidGridView">@style/CaldroidDefaultDarkGridView</item>
+        <item name="styleCaldroidLeftArrow">@style/CaldroidDefaultLeftArrowq</item>
+        <item name="styleCaldroidRightArrow">@style/CaldroidDefaultRightArrowq</item>
+        <item name="styleCaldroidWeekdayView">@style/Week</item>
+    </style>
+
+    <style name="CaldroidDefaultDarkCalendarViewLayout">
+        <item name="android:background">#5ecb94</item>
+    </style>
+
+    <style name="Week" parent="CaldroidDefaultWeekday">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="CaldroidDefaultLeftArrowq" parent="CaldroidDefaultLeftButton">
+        <item name="android:background">@drawable/ic_chevron_left_white_24dp</item>
+    </style>
+
+    <style name="CaldroidDefaultRightArrowq" parent="CaldroidDefaultRightButton">
+        <item name="android:background">@drawable/ic_chevron_right_white_24dp</item>
+    </style>
+
+    <style name="CaldroidDefaultDarkMonthName" parent="CaldroidDefaultMonthName">
+        <item name="android:textColor">@color/caldroid_white</item>
+    </style>
+
+    <style name="CaldroidDefaultDarkGridView" parent="CaldroidDefaultGridView">
+        <item name="android:background">@color/caldroid_holo_blue_dark</item>
+    </style>
+
+    <style name="CaldroidDefaultDarkCell" parent="CaldroidDefaultCell">
+        <item name="android:textColor">@color/cell_text_color</item>
+        <item name="android:background">@drawable/cell_bg</item>
+    </style>
+
+    <style name="CaldroidDefaultDarkNormalCell" parent="CaldroidDefaultDarkCell">
+        <item name="android:padding">5dp</item>
+    </style>
+
+    <style name="CaldroidDefaultDarkSquareCell" parent="CaldroidDefaultDarkCell" />
+
 </resources>
