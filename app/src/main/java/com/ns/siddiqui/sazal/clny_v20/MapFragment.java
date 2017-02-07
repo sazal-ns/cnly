@@ -10,15 +10,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -26,11 +22,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
@@ -56,8 +57,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppConfig;
-import com.ns.siddiqui.sazal.clny_v20.AppConfig.Constants;
-import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
+import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppController;
+import com.ns.siddiqui.sazal.clny_v20.helpingHand.DownLoadImageTask;
+import com.ns.siddiqui.sazal.clny_v20.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +72,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener, LocationListener, ResultCallback<LocationSettingsResult> {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<LocationSettingsResult>, GoogleMap.OnMarkerClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -81,6 +83,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     private String mParam2;
 
     private Button fabButton;
+    private NetworkImageView thumbnail;
+    private TextView title, rating, genre, releaseYear;
 
     private OnFragmentInteractionListener mListener;
 
@@ -98,6 +102,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     private Location tempLocation;
     private IconGenerator iconGenerator;
+
+    private JSONObject object;
+   private JSONObject jsonObject;
 
     protected static final String TAG = "MapFragment";
     public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
@@ -144,6 +151,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
@@ -179,7 +187,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         buildLocationSettingsRequest();
         // checkLocationSettings();
 
-
         fabButton = (Button) view.findViewById(R.id.fabButton);
         fabButton.setEnabled(false);
         fabButton.setOnClickListener(new View.OnClickListener() {
@@ -194,8 +201,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                     ClynfromDB(location.getLatitude(), location.getLongitude());
                 }*/
                 ClynfromDB(location.getLatitude(), location.getLongitude());
-
-
             }
         });
 
@@ -288,7 +293,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     @Override
     public void onAttach(Context context) {
-        // 1
         super.onAttach(context);
     }
 
@@ -329,6 +333,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.style_json));
 
+        mMap.setOnMarkerClickListener(this);
+
         //iconGenerator.setColor(R.color.appCOlor);
         // iconGenerator.setStyle(IconGenerator.STYLE_GREEN);
         checkLocationSettings();
@@ -352,7 +358,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
             @Override
             public void onResponse(String response) {
-                JSONObject jsonObject;
+
                 try {
                     jsonObject = new JSONObject(response);
                     //Log.e("Map", jsonObject.toString());
@@ -361,10 +367,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                         String dynamicKey = (String) keys.next();
                         // Log.e("key", dynamicKey);
                         if (!dynamicKey.contains("error")) {
-                            JSONObject object = jsonObject.getJSONObject(dynamicKey);
+                            object = jsonObject.getJSONObject(dynamicKey);
                             Log.e("Map object", object.toString());
                             MarkerOptions marker = new MarkerOptions().position(new LatLng(object.getDouble("lat"), object.getDouble("lng")))
-                                    .title("$" + object.getString("prize"));
+                                    .title("$" + object.getString("prize")).snippet(object.getString("id"));
 
                             marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
@@ -538,11 +544,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
     }
 
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        Toast.makeText(getContext(), "onMarkerClick", Toast.LENGTH_SHORT).show();
-        return true;
-    }
+
 
     @Override
     public void onLocationChanged(Location location) {
@@ -620,6 +622,66 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                 }
                 break;
         }
+    }
+
+    private String tit, gen, rat, rey;
+    private View something(){
+        LayoutInflater inflater1 = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ViewGroup view1 = (ViewGroup) inflater1.inflate(R.layout.list_row, null, false);
+
+        ImageView imageView = (ImageView) view1.findViewById(R.id.thumbnail);
+        new DownLoadImageTask(imageView).execute("http://api.androidhive.info/json/movies/1.jpg");
+
+        title = (TextView) view1.findViewById(R.id.title) ;
+        title.setText(tit);
+        genre = (TextView) view1.findViewById(R.id.genre);
+        DecimalFormat format = new DecimalFormat("####.00");
+        double d = Double.parseDouble(gen);
+        if (d<  1)
+        genre.setText("Distance 0"+format.format(d)+" KM");
+        else genre.setText("Distance "+format.format(d)+" KM");
+        rating = (TextView) view1.findViewById(R.id.rating);
+        rating.setText(rat);
+        releaseYear = (TextView) view1.findViewById(R.id.releaseYear);
+        releaseYear.setText("$"+rey);
+        return view1;
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Log.e("MarkerClick",marker.getSnippet());
+        Iterator keys = jsonObject.keys();
+        while(keys.hasNext()){
+            String dynamicKey = (String) keys.next();
+            // Log.e("key", dynamicKey);
+            try {
+            if (!dynamicKey.contains("error")) {
+                object = jsonObject.getJSONObject(dynamicKey);
+                if (object.getString("id").equals(marker.getSnippet())){
+                    tit=object.getString("name");
+                    rat=object.getString("address");
+                    gen=object.getString("distance");
+                    rey=object.getString("prize");
+                    break;
+
+                }
+            }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        showCleaner();
+        return true;
+    }
+
+    private void showCleaner(){
+        boolean wrapInScrollView = true;
+        new MaterialDialog.Builder(getContext())
+                .title("Cleaner Info")
+                .customView(something(), wrapInScrollView)
+                .positiveText("Hire")
+                .negativeText("Cancel")
+                .show();
     }
 
     /**

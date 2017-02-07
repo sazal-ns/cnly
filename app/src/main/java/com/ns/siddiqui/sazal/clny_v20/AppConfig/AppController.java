@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2016. By Noor Nabiul Alam Siddiqui
- */
-
 package com.ns.siddiqui.sazal.clny_v20.AppConfig;
 
 import android.app.Application;
@@ -9,24 +5,23 @@ import android.text.TextUtils;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
-
-/**
- * Created by sazal on 2016-12-20.
- */
+import com.ns.siddiqui.sazal.clny_v20.helpingHand.LruBitmapCache;
 
 public class AppController extends Application {
 
     public static final String TAG = AppController.class.getSimpleName();
 
     private RequestQueue mRequestQueue;
+    private ImageLoader mImageLoader;
 
     private static AppController mInstance;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mInstance = this;
+        mInstance = getInstance();
     }
 
     public static synchronized AppController getInstance() {
@@ -41,7 +36,14 @@ public class AppController extends Application {
         return mRequestQueue;
     }
 
+    public ImageLoader getImageLoader() {
+        getRequestQueue();
+
+        return  mImageLoader = new ImageLoader(this.mRequestQueue, new LruBitmapCache());
+    }
+
     public <T> void addToRequestQueue(Request<T> req, String tag) {
+        // set the default tag if tag is empty
         req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
         getRequestQueue().add(req);
     }
@@ -56,5 +58,4 @@ public class AppController extends Application {
             mRequestQueue.cancelAll(tag);
         }
     }
-
 }

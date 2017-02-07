@@ -480,7 +480,7 @@ Log.e("Fb", String.valueOf(fb));
             public void onErrorResponse(VolleyError error) {
                 Log.e("chekc login", "Login Error: " + error.getMessage());
                 /*dialogShow(error.getMessage()+"\n Please Try Again");*/
-                new DialogShow( LoginActivity.this,"Server Error","Please Try Again",getResources().getDrawable(R.mipmap.ic_alert));
+                //new DialogShow( LoginActivity.this,"Server Error","Please Try Again",getResources().getDrawable(R.mipmap.ic_alert));
                 if (!fb) hideDialog();
             }
         }) {

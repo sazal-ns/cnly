@@ -237,12 +237,24 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
     private Fragment getHomeFragment() {
         switch (navItemIndex) {
+            case 1:
+                return new UnderDevelopmentFragment();
             case 2:
                 return new CalendarFragment();
+            case 3:
+                return new UnderDevelopmentFragment();
+            case 4:
+                return new UnderDevelopmentFragment();
+            case 5:
+                return new UnderDevelopmentFragment();
             case 6:
                 return new AboutFragment();
+            case 7:
+                return new UnderDevelopmentFragment();
             case 8:
                 return new InternFragment();
+            case 9:
+                return new UnderDevelopmentFragment();
             case 10:
                 return new ProfileFragment();
             default:
