@@ -7,16 +7,20 @@ package com.ns.siddiqui.sazal.clny_v20;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +62,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppConfig;
 import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppController;
+import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DownLoadImageTask;
 import com.ns.siddiqui.sazal.clny_v20.model.User;
 
@@ -79,6 +84,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
+
+    private static final int LOCATION_PERMISSION_CONSTANT = 100;
+    private static final int REQUEST_PERMISSION_SETTING = 101;
+    private boolean sentToSettings = false;
+    private SharedPreferences permissionStatus;
+
     private String mParam1;
     private String mParam2;
 
@@ -104,7 +115,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     private IconGenerator iconGenerator;
 
     private JSONObject object;
-   private JSONObject jsonObject;
+    private JSONObject jsonObject;
 
     protected static final String TAG = "MapFragment";
     public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
@@ -173,6 +184,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        permissionStatus = getActivity().getSharedPreferences("permissionStatus", Context.MODE_PRIVATE);
 
         mRequestingLocationUpdates = false;
         mLastUpdateTime = "";
@@ -483,53 +495,104 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
         Log.i(TAG, "Connected to GoogleApiClient");
         if (location == null) {
-            //fetchAddressButtonHandler();
-            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                Log.i(TAG, "GoogleApiClientgjhgjhftytyyt");
 
-
-              /*  if (!Geocoder.isPresent()) {
-                    Log.e(TAG, "no_geocoder_available");
-                    Toast.makeText(getContext(), "no_geocoder_available", Toast.LENGTH_LONG).show();
-                }else  startIntentService();*/
-            }
             location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-            moveMap();
-           /* //updateUI();
-            if (location != null) {
-                Log.e(TAG, "Connected to GoogleApiClient mAddressRequested");
-                // Determine whether a Geocoder is available.
 
-                // It is possible that the user presses the button to get the address before the
-                // GoogleApiClient object successfully connects. In such a case, mAddressRequested
-                // is set to true, but no attempt is made to fetch the address (see
-                // fetchAddressButtonHandler()) . Instead, we start the intent service here if the
-                // user has requested an address, since we now have a connection to GoogleApiClient.
-                if (mAddressRequested) {
-
-                }
-                //moveMap();
-            }*/
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Need to access Location Permission");
+                builder.setMessage("To search cleaner nearest you location, this app needs call phone permission.");
+                builder.setPositiveButton("Grant", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                LOCATION_PERMISSION_CONSTANT);
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.show();
+            }else if (permissionStatus.getBoolean(Manifest.permission.ACCESS_COARSE_LOCATION,false)){
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Need to access Location Permission");
+                builder.setMessage("To search cleaner nearest you location, this app needs call phone permission.");
+                builder.setPositiveButton("Grant", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        sentToSettings = true;
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
+                        intent.setData(uri);
+                        startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
+                        Toast.makeText(getActivity().getBaseContext(), "Go to Permissions to Grant Storage", Toast.LENGTH_LONG).show();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.show();
+            }else {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        LOCATION_PERMISSION_CONSTANT);
+            }
+            SharedPreferences.Editor editor = permissionStatus.edit();
+            editor.putBoolean(Manifest.permission.ACCESS_COARSE_LOCATION,true);
+            editor.commit();
+        }else loc();
 
         }
 
-
-        // If the user presses the Start Updates button before GoogleApiClient connects, we set
-        // mRequestingLocationUpdates to true (see startUpdatesButtonHandler()). Here, we check
-        // the value of mRequestingLocationUpdates and if it is true, we start location updates.
-        /*if (mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }*/
+    private void loc() {
+        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        moveMap();
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == LOCATION_PERMISSION_CONSTANT){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                loc();
+            }else {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Need to access Location Permission");
+                    builder.setMessage("To search cleaner nearest you location, this app needs call phone permission.");
+                    builder.setPositiveButton("Grant", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+
+                            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                    LOCATION_PERMISSION_CONSTANT);
+
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    builder.show();
+                }else new DialogShow(getContext(), "Sorry","We Can't Call Directly from app.\n Call Button not working now.",
+                        getResources().getDrawable(R.drawable.error_icon));
+            }
+        }
+    }
+
+
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -604,9 +667,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     }
 
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.e("Find", "onActivityResult");
+        if (requestCode == REQUEST_PERMISSION_SETTING){
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                loc();
+            }
+        }
 
         switch (requestCode) {
             // Check for the integer request code originally supplied to startResolutionForResult().
@@ -759,6 +829,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         super.onResume();
         if (googleApiClient.isConnected() && mRequestingLocationUpdates) {
             startLocationUpdates();
+        }
+
+        if (sentToSettings){
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                loc();
+            }
         }
     }
 
