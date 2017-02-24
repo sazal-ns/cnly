@@ -15,8 +15,17 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.ConnectionDetector;
+import com.digits.sdk.android.Digits;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterCore;
+import io.fabric.sdk.android.Fabric;
 
 public class Loading extends AppCompatActivity {
+
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "vhBuWZEjMhLbGJF6E8SCppuZy";
+    private static final String TWITTER_SECRET = "YolTPD4y7JuAUqFTCKX9U2TWiVkr1QYQzSaHAWeufHITFypPru";
+
 
     ProgressBar loading;
     TextView textView;
@@ -28,6 +37,8 @@ public class Loading extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new TwitterCore(authConfig), new Digits.Builder().build());
         setContentView(R.layout.activity_loading);
 
         textView = (TextView) findViewById(R.id.loadingTextView);

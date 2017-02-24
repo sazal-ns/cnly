@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -751,6 +752,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                 .customView(something(), wrapInScrollView)
                 .positiveText("Hire")
                 .negativeText("Cancel")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Intent intent = new Intent(getActivity(), CardActivity.class);
+                        startActivity(intent);
+                    }
+                })
                 .show();
     }
 

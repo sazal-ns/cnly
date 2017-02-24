@@ -1,4 +1,19 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 
 android {
     compileSdkVersion 'Google Inc.:Google APIs:23'
@@ -40,21 +55,28 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    compile 'com.google.android.gms:play-services-maps:10.0.1'
+    compile 'com.google.android.gms:play-services-location:10.0.1'
+    compile 'com.google.android.gms:play-services-auth:10.0.1'
+    compile 'com.google.android.gms:play-services-wallet:10.0.1'
+    compile 'com.google.maps.android:android-maps-utils:0.4.4'
+    compile 'com.google.code.gson:gson:2.4'
     compile 'com.afollestad.material-dialogs:core:0.9.1.0'
     compile 'com.android.support:appcompat-v7:25.0.1'
     compile 'com.android.support:design:25.0.1'
-    compile 'com.google.android.gms:play-services-maps:10.0.1'
     compile 'com.melnykov:floatingactionbutton:1.3.0'
-    compile 'com.google.android.gms:play-services-location:10.0.1'
     compile 'com.mcxiaoke.volley:library-aar:1.0.0'
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.github.aakira:expandable-layout:1.6.0@aar'
     compile 'com.android.support:support-v4:23.4.0'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
-    compile 'com.google.code.gson:gson:2.4'
-    compile 'com.google.android.gms:play-services-auth:10.0.1'
-    compile 'com.google.maps.android:android-maps-utils:0.4.4'
     compile 'com.roomorama:caldroid:3.0.1'
     compile 'com.stripe:stripe-android:2.0.2'
     testCompile 'junit:junit:4.12'
+    compile('com.digits.sdk.android:digits:2.0.5@aar') {
+        transitive = true;
+    }
+    compile('io.fabric.sdk.android:fabric:1.3.10@aar') {
+        transitive = true;
+    }
 }

@@ -38,4 +38,6 @@
     <!-- Facebook Login Data -->
     <string name="facebook_app_id">1855175678060907</string>
     <string name="fb_login_protocol_scheme">fb1855175678060907</string>
+
+    <string name="com_stripe_publishable_key">pk_test_pTPMkLbTMszot17KHsMtCEml</string>
 </resources>

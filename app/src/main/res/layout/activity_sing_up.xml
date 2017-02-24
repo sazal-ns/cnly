@@ -31,8 +31,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_below="@+id/imageView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_centerInParent="true"
         android:layout_height="wrap_content"
         android:background="@drawable/singin_bg"
         android:id="@+id/topPanel">
@@ -110,44 +109,5 @@
             android:background="@android:color/transparent"/>
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/topPanel"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp"
-        android:id="@+id/loginPanel">
-
-        <Button
-            android:text="@string/fb_sing_up"
-            android:layout_width="@dimen/sing_in_layout_width"
-            android:layout_height="wrap_content"
-            android:id="@+id/fbLoginButton"
-            android:layout_gravity="center"
-            android:background="#3a5b99"
-            android:textColor="@android:color/white"/>
-
-        <Button
-            android:text="@string/google_sing_up"
-            android:layout_width="@dimen/sing_in_layout_width"
-            android:layout_height="wrap_content"
-            android:id="@+id/googleButton"
-            android:layout_gravity="center"
-            android:background="#cc3433"
-            android:layout_marginTop="5dp"
-            android:textColor="@android:color/white"/>
-
-        <Button
-            android:text="@string/phone_sing_up"
-            android:layout_width="@dimen/sing_in_layout_width"
-            android:layout_height="wrap_content"
-            android:id="@+id/phoneButton"
-            android:layout_gravity="center"
-            android:background="#454545"
-            android:layout_marginTop="5dp"
-            android:textColor="@android:color/white"/>
-    </LinearLayout>
 
 </RelativeLayout>
