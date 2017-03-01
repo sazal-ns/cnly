@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
+import com.stripe.android.exception.AuthenticationException;
 import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
 
@@ -28,7 +29,7 @@ public class CardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_card);
     }
 
-    public void submitCard(View view) {
+    public void submitCard(View view) throws AuthenticationException {
         // TODO: replace with your own test key
         final String publishableApiKey = BuildConfig.DEBUG ?
                 "pk_test_6pRNASCoBOKtIshFeQd4XMUh" :
@@ -44,14 +45,12 @@ public class CardActivity extends AppCompatActivity {
                 Integer.valueOf(yearField.getText().toString()),
                 cvcField.getText().toString());
 
-        Stripe stripe = new Stripe();
+        Stripe stripe = new Stripe(getApplicationContext(),publishableApiKey);
         stripe.createToken(card, publishableApiKey, new TokenCallback() {
             public void onSuccess(Token token) {
                 // TODO: Send Token information to your backend to initiate a charge
-                Toast.makeText(
-                        getApplicationContext(),
-                        "Token created: " + token.getId(),
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"Token created: " + token.getId(),Toast.LENGTH_LONG).show();
+
             }
 
             public void onError(Exception error) {

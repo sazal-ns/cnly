@@ -11,4 +11,9 @@
     <color name="gray">#dadad8</color>
     <color name="blue">#ff33b5e5</color>
     <color name="white">#ffffff</color>
+
+    <color name="spinnerItem">#AAAAAA</color>
+    <color name="editText">#AAAAAA</color>
+    <color name="buttonText">#EEEEEE</color>
+    <color name="headerText">#EEEEEE</color>
 </resources>

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2016. By Noor Nabiul Alam Siddiqui
+ * Copyright (c) 2017. Developed and copyright by Noor Nabiul Alam Siddiqui
+ * FB.com/sazal.ns
  */
 
 package com.ns.siddiqui.sazal.clny_v20.model;
@@ -7,7 +8,7 @@ package com.ns.siddiqui.sazal.clny_v20.model;
 import java.io.Serializable;
 
 /**
- * Created by sazal on 2016-12-22.
+ * Created by sazal on 2017-03-02.
  */
 
 public class User implements Serializable {

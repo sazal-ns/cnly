@@ -35,7 +35,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -62,10 +61,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppConfig;
-import com.ns.siddiqui.sazal.clny_v20.AppConfig.AppController;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DialogShow;
 import com.ns.siddiqui.sazal.clny_v20.helpingHand.DownLoadImageTask;
-import com.ns.siddiqui.sazal.clny_v20.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;

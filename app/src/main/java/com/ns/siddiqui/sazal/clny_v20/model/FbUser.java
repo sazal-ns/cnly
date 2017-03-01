@@ -1,13 +1,14 @@
 /*
- * Copyright (c) 2017. By Noor Nabiul Alam Siddiqui
+ * Copyright (c) 2017. Developed and copyright by Noor Nabiul Alam Siddiqui
+ * FB.com/sazal.ns
  */
 
 package com.ns.siddiqui.sazal.clny_v20.model;
 
 /**
- * Created by sazal on 2017-01-06.
+ * Created by sazal on 2017-03-02.
  */
-import com.google.gson.annotations.SerializedName;
+
 
 public class  FbUser {
     public static String name;
